@@ -1,0 +1,6 @@
+name = "axiom-example"
+main = "src/index.ts"
+compatibility_date = "2024-04-03"
+
+[vars]
+MY_VARIABLE = "hello world"

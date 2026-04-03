@@ -1,0 +1,71 @@
+@base_url=http://localhost:3000
+@title=Axiom REST Adapter Example
+
+###
+POST {{base_url}}/posts
+Content-Type: application/json
+
+{
+  "title": "Hello World",
+  "content": "This is a new post."
+}
+
+###
+GET {{base_url}}/posts
+
+###
+GET {{base_url}}/posts/123
+
+###
+DELETE {{base_url}}/posts/123
+
+###
+PUT {{base_url}}/posts/123
+Content-Type: application/json
+
+{
+  "title": "Updated Title",
+  "content": "Updated content."
+}
+
+###
+POST {{base_url}}/login
+Content-Type: application/json
+
+{
+  "email": "userxample.com",
+  "username": "us"
+}
+
+###
+GET {{base_url}}/auth/whoami
+Headers:
+  user-id: 123
+
+###
+POST {{base_url}}/auth/login
+Content-Type: application/json
+x-admin-key: secret
+
+###
+GET {{base_url}}/admin/dashboard
+# Authorization: 1234
+
+
+###
+GET {{base_url}}/test
+
+### CORS Pre-flight (OPTIONS)
+OPTIONS {{base_url}}/test
+Origin: http://localhost:5173
+Access-Control-Request-Method: GET
+Access-Control-Request-Headers: Content-Type
+
+### CORS GET (With Origin)
+GET {{base_url}}/test
+Origin: http://localhost:5173
+
+### CORS Invalid Origin (Should Error)
+GET {{base_url}}/test
+Origin: http://malicious-site.com
+

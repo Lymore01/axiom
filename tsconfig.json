@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": "./",
+    "paths": {
+      "@axiom/core": ["packages/core/src/index.ts"],
+      "@axiom/express": ["packages/adapter-express/src/index.ts"],
+      "@axiom/static": ["packages/features/static/src/index.ts"],
+      "@axiom/auth": ["packages/plugins/auth/src/index.ts"],
+      "@axiom/logger": ["packages/logger/src/index.ts"],
+      "@axiom/logger-plugin": ["packages/plugins/logger/src/index.ts"],
+      "@axiom/cors": ["packages/plugins/cors/src/index.ts"],
+      "@axiom/security": ["packages/plugins/security/src/index.ts"]
+    },
+    "types": ["node"]
+  },
+  "exclude": ["node_modules"]
+}

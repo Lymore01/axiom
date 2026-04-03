@@ -1,0 +1,24 @@
+{
+  "name": "node-express-example",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon --exec tsx src/index.ts"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@axiom/auth": "workspace:*",
+    "@axiom/core": "workspace:*",
+    "@axiom/cors": "workspace:*",
+    "@axiom/express": "workspace:*",
+    "@axiom/logger-plugin": "workspace:*",
+    "@axiom/security": "workspace:*",
+    "@axiom/static": "workspace:*",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

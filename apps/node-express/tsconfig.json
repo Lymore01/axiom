@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@axiom/*": ["../../packages/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}

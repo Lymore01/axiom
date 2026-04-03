@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+.turbo/
+out/
+.next/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+.history/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Temporal files
+/tmp/
+.temp/
+
+# Misc
+*.tsbuildinfo
+
+# progress file
+TODO.md
+ENGINE_API.md
