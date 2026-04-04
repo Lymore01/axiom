@@ -1,8 +1,10 @@
 import type { Handler, Route, RouteSchema } from "./types";
 import { createRegex } from "./utils";
+import { RadixTree } from "./radix";
 
 export class Router<D extends Record<string, any>> {
-  private routes: Route<D>[] = [];
+  private tree = new RadixTree<D>();
+  private routes: Route<D>[] = []; // Keep for backward compatibility or getRoutes()
 
   add<Path extends string, S extends RouteSchema, Return>(
     method: string,
@@ -36,17 +38,31 @@ export class Router<D extends Record<string, any>> {
     };
 
     this.routes.push(route);
+    this.tree.add(method, path, route);
     return route;
   }
 
   match(method: string, pathname: string) {
-    for (const route of this.routes) {
-      if (route.method === method) {
-        const match = pathname.match(route.regex);
-        if (match) return { route, match };
-      }
-    }
-    return null;
+    const result = this.tree.match(method, pathname);
+
+    if (!result) return null;
+
+    // Convert radix params to the format Axiom.handle expects (for now)
+    // or you can refactor Axiom.handle to use the params object directly.
+    const { route, params } = result;
+
+    // Axiom.handle expects 'match' to be an array where index 1+ corresponds to paramNames
+    const matchArray: string[] = [pathname];
+    route.paramNames.forEach((name) => {
+      matchArray.push(params[name]);
+    });
+
+    return { route, match: matchArray };
+  }
+
+  addRoute(route: Route<D>) {
+    this.routes.push(route);
+    this.tree.add(route.method, route.path, route);
   }
 
   getRoutes() {
@@ -55,5 +71,7 @@ export class Router<D extends Record<string, any>> {
 
   setRoutes(routes: Route<D>[]) {
     this.routes = routes;
+    this.tree = new RadixTree<D>();
+    routes.forEach((r) => this.tree.add(r.method, r.path, r));
   }
 }

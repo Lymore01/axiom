@@ -82,7 +82,7 @@ export class Axiom<
       const fullPath = `${prefix}${route.path}`.replace(/\/+/g, "/");
       const paramNames: string[] = [];
 
-      this.router.getRoutes().push({
+      this.router.addRoute({
         ...route,
         path: fullPath,
         regex: createRegex(fullPath, paramNames),
