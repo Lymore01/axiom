@@ -1,24 +1,24 @@
 import { createAxiomClient } from "@axiom/client";
-import { axiom } from "./index.js";
+import type { axiom } from "./index.js";
 
 // 1. Create the client using only the server's type!
 const client = createAxiomClient<typeof axiom>("http://localhost:3000");
 
 async function runTest() {
-  console.log("🚀 Testing Axiom E2E Client...");
+  console.log("Testing Axiom E2E Client...");
 
   try {
     // 2. This is 100% type-safe!
     // It knows "posts" exists, and returns { message: string }
     const posts = await client.posts.get();
-    console.log("✅ GET /posts:", posts.message);
+    console.log("GET /posts:", posts.message);
 
     // 3. Handled dynamic params!
     // It knows it needs a "params" object with "id"
     const user = await client.users[":id"].get({
       params: { id: "123" },
     });
-    console.log("✅ GET /users/123:", user.id);
+    console.log("GET /users/123:", user.id);
 
     // 4. Schema validation on the frontend!
     // It will complain if body is missing "name" or "age"!
@@ -32,10 +32,10 @@ async function runTest() {
 
     const whoami = await client.auth.whoami.get();
 
-    console.log("✅ POST /test (Validated):", postData.email);
-    console.log("✅ GET /auth/whoami:", whoami);
+    console.log("POST /test (Validated):", postData.email);
+    console.log("GET /auth/whoami:", whoami);
   } catch (error) {
-    console.error("❌ Client Test Failed:", error);
+    console.error("Client Test Failed:", error);
   }
 }
 

@@ -74,6 +74,7 @@ POST {{base_url}}/test
 Content-Type: application/json
 
 {
-  "name": "John Doe",
-  "age": "thirty"
+  "name": "John Doe    ",
+  "age": 30, 
+  "email": "example@gmail.com"
 }

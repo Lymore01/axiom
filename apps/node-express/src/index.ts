@@ -3,9 +3,9 @@ import Axiom from "@axiom/core";
 import { cors } from "@axiom/cors";
 import { createExpressAdapter } from "@axiom/express";
 import { rateLimit } from "@axiom/rate-limit";
+import { s } from "@axiom/schema";
 import { securityHeaders } from "@axiom/security";
 import { staticPlugin } from "@axiom/static";
-import z from "zod";
 
 export const axiom = new Axiom()
   .use(cors({ origin: ["http://localhost:5173"] }))
@@ -28,10 +28,10 @@ export const axiom = new Axiom()
       return body;
     },
     {
-      body: z.object({
-        name: z.string(),
-        age: z.number(),
-        email: z.email(),
+      body: s.object({
+        name: s.string().min(3).toLowerCase().trim(),
+        age: s.number(),
+        email: s.string().email(),
       }),
     },
   )

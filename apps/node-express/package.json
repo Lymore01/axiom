@@ -19,7 +19,8 @@
     "@axiom/security": "workspace:*",
     "@axiom/static": "workspace:*",
     "@axiom/rate-limit": "workspace:*",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "@axiom/schema": "workspace:*"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
