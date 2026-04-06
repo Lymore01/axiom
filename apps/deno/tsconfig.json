@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "moduleResolution": "bundler",
-    "lib": ["ESNext", "deno.ns"]
+    "lib": ["esnext"],
+    "types": ["@types/deno"]
   },
   "include": ["**/*.ts"]
 }

@@ -10,4 +10,4 @@ const axiom = new Axiom()
   })
   .get("/api/v1", () => ({ status: "OK" }));
 
-Deno.serve({ port: 3002 }, (req) => axiom.handle(req));
+axiom.listen(3002);

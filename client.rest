@@ -1,4 +1,4 @@
-@base_url=http://localhost:3000
+@base_url=http://localhost:3333
 @title=Axiom REST Adapter Example
 
 ###
@@ -77,4 +77,19 @@ Content-Type: application/json
   "name": "John Doe    ",
   "age": 30, 
   "email": "example@gmail.com"
+}
+
+# bun specific
+###
+GET {{base_url}}
+Headers:
+  user-id: 123
+
+###
+POST {{base_url}}/echo
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "age": 30
 }

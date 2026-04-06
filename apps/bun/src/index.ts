@@ -1,10 +1,16 @@
 import { authRoutes } from "@axiom/auth";
 import Axiom from "@axiom/core";
+import { s } from "@axiom/schema";
 
 const axiom = new Axiom()
   .decorate({
     db: { query: (sql: string) => `Result from Bun DB for ${sql}` },
     log: (msg: string) => console.log(`[BUN LOG]: ${msg}`),
+  })
+  .derive(({ headers }) => {
+    return {
+      user: headers.get("user-id"),
+    };
   })
   .use(authRoutes)
   .onRequest((ctx) => {
@@ -17,7 +23,22 @@ const axiom = new Axiom()
       runtime: "bun",
       version: (globalThis as any).Bun?.version || "unknown",
     };
-  });
+  })
+  .post(
+    "/echo",
+    (ctx) => {
+      return {
+        received: ctx.body,
+        timestamp: new Date().toISOString(),
+      };
+    },
+    {
+      body: s.object({
+        name: s.string(),
+        age: s.number().optional(),
+      }),
+    },
+  );
 
 console.log("Axiom is live (Bun Native) at http://localhost:3001");
 

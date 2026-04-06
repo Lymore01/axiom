@@ -7,8 +7,10 @@
   "author": "Lymore01",
   "license": "MIT",
   "scripts": {
-    "dev": "pnpm --filter node-express-example dev",
+    "dev": "pnpm dev:node",
+    "dev:node": "pnpm --filter node-express-example dev",
     "dev:bun": "pnpm --filter bun-example dev",
+    "dev:bun-native": "pnpm --filter bun-native-app dev",
     "dev:cf": "pnpm --filter cloudflare-workers-example dev",
     "dev:deno": "pnpm --filter deno-example dev",
     "build": "pnpm -r build",

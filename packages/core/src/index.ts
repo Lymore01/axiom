@@ -349,6 +349,51 @@ export class Axiom<
     this.hooks.addAfterHandleHook(fn as any);
     return this;
   }
+
+  /**
+   * Automatically detect the runtime and start a server.
+   * Currently supports: Bun, Deno.
+   * For Node, use a specific adapter like @axiom/adapter-express.
+   */
+  listen(portOrOptions: number | any = 3000): any {
+    const options =
+      typeof portOrOptions === "number"
+        ? { port: portOrOptions }
+        : portOrOptions || {};
+    const port = options.port || 3000;
+
+    // @ts-ignore - Bun detection
+    if (typeof Bun !== "undefined") {
+      // @ts-ignore
+      const server = Bun.serve({
+        ...options,
+        port,
+        fetch: (req: Request) => this.handle(req),
+      });
+
+      console.log(`\x1b[32m Axiom listening on ${server.url}\x1b[0m`);
+      return server;
+    }
+
+    // @ts-ignore - Deno detection
+    if (typeof Deno !== "undefined" && typeof Deno.serve === "function") {
+      // @ts-ignore
+      return Deno.serve({ ...options, port }, (req) => this.handle(req));
+    }
+
+    if (typeof process !== "undefined" && process.release?.name === "node") {
+      throw new Error(
+        "[Axiom] Automatic runtime detection found Node.js. " +
+          "Axiom requires a Fetch API compatible server. " +
+          "Please use @axiom/adapter-express for Node.js environments.",
+      );
+    }
+
+    throw new Error(
+      "[Axiom] Automatic runtime detection failed. " +
+        "Ensure you are running in a supported environment (Bun, Deno) or use an adapter.",
+    );
+  }
 }
 
 export default Axiom;
