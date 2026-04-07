@@ -1,10 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@axiom/*": ["../../packages/*"]
-    }
+    "moduleResolution": "bundler"
   },
   "include": ["src/**/*"]
 }

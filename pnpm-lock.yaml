@@ -11,6 +11,9 @@ importers:
       pino:
         specifier: ^10.3.1
         version: 10.3.1
+      pino-pretty:
+        specifier: ^13.1.3
+        version: 13.1.3
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.4.10
@@ -107,7 +110,7 @@ importers:
         version: link:../../packages/plugins/security
       '@axiom/static':
         specifier: workspace:*
-        version: link:../../packages/features/static
+        version: link:../../packages/plugins/static
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -154,12 +157,6 @@ importers:
         specifier: ^10.3.1
         version: 10.3.1
 
-  packages/features/static:
-    dependencies:
-      '@axiom/core':
-        specifier: workspace:*
-        version: link:../../core
-
   packages/logger:
     dependencies:
       pino:
@@ -189,9 +186,6 @@ importers:
       '@axiom/logger':
         specifier: workspace:*
         version: link:../../logger
-      pino:
-        specifier: ^10.3.1
-        version: 10.3.1
 
   packages/plugins/rate-limit:
     dependencies:
@@ -204,6 +198,18 @@ importers:
         version: 5.9.3
 
   packages/plugins/security:
+    dependencies:
+      '@axiom/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/plugins/static:
+    dependencies:
+      '@axiom/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/plugins/upload:
     dependencies:
       '@axiom/core':
         specifier: workspace:*

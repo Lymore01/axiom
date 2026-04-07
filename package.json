@@ -25,8 +25,5 @@
     "@types/node": "^22.13.10",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2"
-  },
-  "dependencies": {
-    "pino": "^10.3.1"
   }
 }

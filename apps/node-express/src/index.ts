@@ -6,8 +6,10 @@ import { rateLimit } from "@axiom/rate-limit";
 import { s } from "@axiom/schema";
 import { securityHeaders } from "@axiom/security";
 import { staticPlugin } from "@axiom/static";
+import uploadPlugin from "@axiom/upload";
 
 export const axiom = new Axiom()
+  .use(uploadPlugin({ dest: "./uploads" }))
   .use(cors({ origin: ["http://localhost:5173"] }))
   .use(securityHeaders())
   .use(rateLimit({ limit: 10, windowMs: 60 * 1000 }))
@@ -44,6 +46,34 @@ export const axiom = new Axiom()
   .get("/test", ({ logger, db }) => {
     logger.info("Fetching data...");
     return db.query("SELECT * FROM users");
+  })
+  .post(
+    "/upload",
+    async (ctx) => {
+      const { file } = ctx.body;
+
+      await ctx.storage.save(file, `${ctx.storage.defaultDest}/${file.name}`);
+
+      return {
+        status: "success",
+        message: "File uploaded successfully",
+        filename: file.name,
+      };
+    },
+    {
+      body: s.object({
+        file: s.file().max(5000000).type("image/"),
+      }),
+    },
+  )
+  .sse("/events", async function* () {
+    for (let i = 0; i < 10; i++) {
+      yield {
+        message: `Event ${i}`,
+        timestamp: new Date().toISOString(),
+      };
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
   });
 const server = createExpressAdapter(axiom);
 
