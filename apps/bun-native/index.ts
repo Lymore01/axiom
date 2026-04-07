@@ -1,12 +1,22 @@
-import Axiom from "@axiom/core";
+import Axiom, { $START_TIME } from "@axiom/core";
 import { z } from "zod";
+
+const generator = async function* () {
+  for (let i = 0; i < 10; i++) {
+    yield {
+      message: `Event ${i}`,
+      timestamp: new Date().toISOString(),
+    };
+    await Bun.sleep(1000);
+  }
+};
 
 new Axiom()
   .derive(() => ({
-    startTime: performance.now(),
+    [$START_TIME]: performance.now(),
   }))
   .onResponse((res, ctx: any) => {
-    const duration = performance.now() - ctx.startTime;
+    const duration = performance.now() - ctx[$START_TIME];
     res.headers.set("X-Response-Time", `${duration.toFixed(3)}ms`);
     console.log(
       `\x1b[35m[PERF]\x1b[0m ${ctx.request.method} ${new URL(ctx.request.url).pathname} - ${duration.toFixed(3)}ms`,
@@ -38,4 +48,7 @@ new Axiom()
       }),
     },
   )
+  .sse("/events", () => {
+    return generator();
+  })
   .listen(3333);

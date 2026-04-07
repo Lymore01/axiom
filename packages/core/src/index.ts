@@ -14,12 +14,16 @@ import { createRegex, formatValidationError } from "./utils";
 export * from "./errors";
 export * from "./types";
 
+export const $START_TIME = Symbol("axiom:startTime");
+export const $SERVER = Symbol("axiom:server");
+
 export class Axiom<
   T extends Record<string, any> = {},
   D extends Record<string, any> = { logger: Logger },
 > {
   private router = new Router<any>();
   private hooks = new Hooks<any>();
+  private server: any;
   private derives: Array<(ctx: any) => any> = [];
   private decorators: Record<string, any> = { logger: createPinoLogger() };
 
@@ -181,16 +185,18 @@ export class Axiom<
     const { pathname, searchParams } = url;
     const method = incomingRequest.method;
 
-    try {
-      for (const hook of this.hooks.onBeforeMatch) {
-        const result = await hook(incomingRequest);
-        if (result instanceof Response) return result;
+    if (this.hooks.onBeforeMatch.length > 0) {
+      try {
+        for (const hook of this.hooks.onBeforeMatch) {
+          const result = await hook(incomingRequest);
+          if (result instanceof Response) return result;
+        }
+      } catch (error: any) {
+        const errorResponse = await this.errorHandler(error, {} as any);
+        return Response.json(errorResponse, {
+          status: error?.status || 500,
+        });
       }
-    } catch (error: any) {
-      const errorResponse = await this.errorHandler(error, {} as any);
-      return Response.json(errorResponse, {
-        status: error?.status || 500,
-      });
     }
 
     const matched = this.router.match(method, pathname);
@@ -199,7 +205,7 @@ export class Axiom<
     }
 
     const { route, match } = matched;
-    let ctx: any;
+    let ctx = Object.create(null);
 
     try {
       // 1. Initial Context Setup
@@ -210,18 +216,19 @@ export class Axiom<
 
       const responseHeaders: Record<string, string> = {};
 
-      ctx = {
-        ...route.decorators,
-        params: rawParams,
-        query: Object.fromEntries(searchParams.entries()),
-        headers: incomingRequest.headers,
-        request: incomingRequest,
-        body: undefined,
-        setResponseHeader: (name: string, value: string) => {
-          responseHeaders[name] = value;
-        },
-        getResponseHeaders: () => responseHeaders,
+      // Internal Metadata
+      (ctx as any)[$SERVER] = this.server;
+
+      Object.assign(ctx, route.decorators);
+      ctx.params = rawParams;
+      ctx.query = Object.fromEntries(searchParams.entries());
+      ctx.headers = incomingRequest.headers;
+      ctx.request = incomingRequest;
+      ctx.body = undefined;
+      ctx.setResponseHeader = (name: string, value: string) => {
+        responseHeaders[name] = value;
       };
+      ctx.getResponseHeaders = () => responseHeaders;
 
       // 2. Body Parsing (skip for GET/HEAD)
       if (method !== "GET" && method !== "HEAD") {
@@ -233,21 +240,27 @@ export class Axiom<
       }
 
       // 3. Global Global/Local Hooks: onRequest
-      for (const onRequestFn of route.onRequests || []) {
-        await onRequestFn(ctx);
+      if (route.onRequests && route.onRequests.length > 0) {
+        for (const onRequestFn of route.onRequests) {
+          await onRequestFn(ctx);
+        }
       }
 
       // 4. Derivations
-      for (const deriveFn of route.derives) {
-        const result = await deriveFn(ctx);
-        if (result instanceof Response) return result;
-        ctx = { ...ctx, ...result };
+      if (route.derives && route.derives.length > 0) {
+        for (const deriveFn of route.derives) {
+          const result = await deriveFn(ctx);
+          if (result instanceof Response) return result;
+          if (result) Object.assign(ctx, result);
+        }
       }
 
       // 5. Hooks: beforeHandle
-      for (const hook of route.beforeHandles) {
-        const response = await hook(ctx);
-        if (response instanceof Response) return response;
+      if (route.beforeHandles && route.beforeHandles.length > 0) {
+        for (const hook of route.beforeHandles) {
+          const response = await hook(ctx);
+          if (response instanceof Response) return response;
+        }
       }
 
       // 6. Schema Validation
@@ -284,15 +297,19 @@ export class Axiom<
       });
 
       // 8. Hooks: onResponse
-      for (const onResponseFn of route.onResponses || []) {
-        const result = await onResponseFn(response, ctx);
-        if (result instanceof Response) response = result;
+      if (route.onResponses && route.onResponses.length > 0) {
+        for (const onResponseFn of route.onResponses) {
+          const result = await onResponseFn(response, ctx);
+          if (result instanceof Response) response = result;
+        }
       }
 
       // 9. Hooks: afterHandle
-      for (const hook of route.afterHandles) {
-        const result = await hook(ctx);
-        if (result instanceof Response) return result;
+      if (route.afterHandles && route.afterHandles.length > 0) {
+        for (const hook of route.afterHandles) {
+          const result = await hook(ctx);
+          if (result instanceof Response) return result;
+        }
       }
 
       return response;
@@ -350,6 +367,39 @@ export class Axiom<
     return this;
   }
 
+  // server sent events
+  sse<T = any>(
+    path: string,
+    handler: (ctx: any) => AsyncIterable<T> | Promise<AsyncIterable<T>>,
+  ) {
+    return this.get(path, async (ctx) => {
+      if ((ctx as any)[$SERVER]?.timeout) {
+        (ctx as any)[$SERVER].timeout(ctx.request, 0);
+      }
+
+      const stream = await handler(ctx);
+
+      const readable = new ReadableStream({
+        async start(controller) {
+          for await (const chunk of stream) {
+            const data =
+              typeof chunk === "string" ? chunk : JSON.stringify(chunk);
+            controller.enqueue(`data: ${data}\n\n`);
+          }
+          controller.close();
+        },
+      }).pipeThrough(new TextEncoderStream());
+
+      return new Response(readable, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          Connection: "keep-alive",
+        },
+      });
+    });
+  }
+
   /**
    * Automatically detect the runtime and start a server.
    * Currently supports: Bun, Deno.
@@ -365,20 +415,21 @@ export class Axiom<
     // @ts-ignore - Bun detection
     if (typeof Bun !== "undefined") {
       // @ts-ignore
-      const server = Bun.serve({
+      this.server = Bun.serve({
         ...options,
         port,
         fetch: (req: Request) => this.handle(req),
       });
 
-      console.log(`\x1b[32m Axiom listening on ${server.url}\x1b[0m`);
-      return server;
+      console.log(`\x1b[32m Axiom listening on ${this.server.url}\x1b[0m`);
+      return this.server;
     }
 
     // @ts-ignore - Deno detection
     if (typeof Deno !== "undefined" && typeof Deno.serve === "function") {
       // @ts-ignore
-      return Deno.serve({ ...options, port }, (req) => this.handle(req));
+      this.server = Deno.serve({ ...options, port }, (req) => this.handle(req));
+      return this.server;
     }
 
     if (typeof process !== "undefined" && process.release?.name === "node") {
