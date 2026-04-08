@@ -1,5 +1,4 @@
 import { authPlugin, authRoutes } from "@axiom/auth";
-import { wsPlugin } from "@axiom/ws";
 import { compression } from "@axiom/compression";
 import Axiom from "@axiom/core";
 import { cors } from "@axiom/cors";
@@ -8,14 +7,17 @@ import { rateLimit } from "@axiom/rate-limit";
 import { s } from "@axiom/schema";
 import { securityHeaders } from "@axiom/security";
 import { staticPlugin } from "@axiom/static";
+import { swagger } from "@axiom/swagger";
 import uploadPlugin from "@axiom/upload";
+import { wsPlugin } from "@axiom/ws";
 
 export const axiom = new Axiom()
   .use(wsPlugin())
+  .use(swagger({ info: { title: "Axiom Node/Express API" } }))
   .use(authPlugin({ secret: "DEVELOPMENT_SECRET_KEY" }))
   .use(uploadPlugin({ dest: "./uploads" }))
   .use(compression({ threshold: 1024 }))
-  .use(cors({ origin: ["http://localhost:5173"] }))
+  .use(cors())
   .use(securityHeaders())
   .use(rateLimit({ limit: 10, windowMs: 60 * 1000 }))
   .use(

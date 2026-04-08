@@ -30,6 +30,8 @@ export abstract class AxiomSchema<T> implements Validator<T> {
   protected _defaultValue?: T;
   protected _transforms: Array<(data: any) => any> = [];
 
+  abstract toJSONSchema(): any;
+
   protected abstract _validate(data: unknown): ValidationResult<T>;
 
   async parse(data: unknown): Promise<T> {
@@ -98,6 +100,15 @@ class StringSchema extends AxiomSchema<string> {
       : { success: false, error: `Expected string, got ${typeof data}` };
   }
 
+  toJSONSchema() {
+    return {
+      type: "string",
+      ...(this._isOptional ? { optional: true } : {}),
+      ...(this._isNullable ? { nullable: true } : {}),
+      ...(this._defaultValue !== undefined ? { default: this._defaultValue } : {}),
+    };
+  }
+
   min(n: number) {
     this.refine((v) => v.length >= n, `Too short (min ${n} characters)`);
     return this;
@@ -159,9 +170,18 @@ class StringSchema extends AxiomSchema<string> {
  */
 class NumberSchema extends AxiomSchema<number> {
   protected _validate(data: unknown): ValidationResult<number> {
-    return typeof data === "number" && !isNaN(data)
+    return typeof data === "number"
       ? { success: true, data }
       : { success: false, error: `Expected number, got ${typeof data}` };
+  }
+
+  toJSONSchema() {
+    return {
+      type: "number",
+      ...(this._isOptional ? { optional: true } : {}),
+      ...(this._isNullable ? { nullable: true } : {}),
+      ...(this._defaultValue !== undefined ? { default: this._defaultValue } : {}),
+    };
   }
 
   min(n: number) {
@@ -197,6 +217,15 @@ class BooleanSchema extends AxiomSchema<boolean> {
       ? { success: true, data }
       : { success: false, error: `Expected boolean, got ${typeof data}` };
   }
+
+  toJSONSchema() {
+    return {
+      type: "boolean",
+      ...(this._isOptional ? { optional: true } : {}),
+      ...(this._isNullable ? { nullable: true } : {}),
+      ...(this._defaultValue !== undefined ? { default: this._defaultValue } : {}),
+    };
+  }
 }
 
 /**
@@ -205,6 +234,10 @@ class BooleanSchema extends AxiomSchema<boolean> {
 class AnySchema extends AxiomSchema<any> {
   protected _validate(data: unknown): ValidationResult<any> {
     return { success: true, data };
+  }
+
+  toJSONSchema() {
+    return { type: "any" };
   }
 }
 
@@ -221,10 +254,21 @@ class ObjectSchema<T extends Record<string, Validator>> extends AxiomSchema<{
   protected _validate(
     data: unknown,
   ): ValidationResult<{ [K in keyof T]: T[K]["_output"] }> {
-    if (typeof data !== "object" || data === null || Array.isArray(data)) {
-      return { success: false, error: "Expected object" };
-    }
     return { success: true, data: data as any };
+  }
+
+  toJSONSchema() {
+    const properties: any = {};
+    for (const key in this.shape) {
+      properties[key] = (this.shape[key] as any).toJSONSchema();
+    }
+    return {
+      type: "object",
+      properties,
+      required: Object.keys(this.shape).filter(
+        (key) => !(this.shape[key] as any)._isOptional,
+      ),
+    };
   }
 
   async parse(data: unknown): Promise<{ [K in keyof T]: T[K]["_output"] }> {
@@ -255,11 +299,17 @@ class ArraySchema<T extends Validator> extends AxiomSchema<T["_output"][]> {
   constructor(private itemSchema: T) {
     super();
   }
-
   protected _validate(data: unknown): ValidationResult<T["_output"][]> {
     return Array.isArray(data)
       ? { success: true, data }
       : { success: false, error: "Expected array" };
+  }
+
+  toJSONSchema() {
+    return {
+      type: "array",
+      items: (this.itemSchema as any).toJSONSchema(),
+    };
   }
 
   min(n: number) {
@@ -295,10 +345,16 @@ class ArraySchema<T extends Validator> extends AxiomSchema<T["_output"][]> {
  */
 class FileSchema extends AxiomSchema<File> {
   protected _validate(data: unknown): ValidationResult<File> {
-    // Check if it's a native File or Blob object
     return data instanceof File || data instanceof Blob
       ? { success: true, data: data as File }
       : { success: false, error: "Expected File or Blob" };
+  }
+
+  toJSONSchema() {
+    return {
+      type: "string",
+      format: "binary",
+    };
   }
 
   max(sizeInBytes: number, message?: string) {

@@ -41,6 +41,12 @@ importers:
       '@axiom/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@axiom/swagger':
+        specifier: workspace:*
+        version: link:../../packages/plugins/swagger
+      '@axiom/upload':
+        specifier: workspace:*
+        version: link:../../packages/plugins/upload
       '@axiom/ws':
         specifier: workspace:*
         version: link:../../packages/plugins/ws
@@ -110,6 +116,12 @@ importers:
       '@axiom/static':
         specifier: workspace:*
         version: link:../../packages/plugins/static
+      '@axiom/swagger':
+        specifier: workspace:*
+        version: link:../../packages/plugins/swagger
+      '@axiom/ws':
+        specifier: workspace:*
+        version: link:../../packages/plugins/ws
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -218,6 +230,12 @@ importers:
         version: link:../../core
 
   packages/plugins/static:
+    dependencies:
+      '@axiom/core':
+        specifier: workspace:*
+        version: link:../../core
+
+  packages/plugins/swagger:
     dependencies:
       '@axiom/core':
         specifier: workspace:*

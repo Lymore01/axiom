@@ -1,11 +1,13 @@
 import Axiom, { $START_TIME } from "@axiom/core";
 import s from "@axiom/schema";
+import { swagger } from "@axiom/swagger";
 import uploadPlugin from "@axiom/upload";
 import wsPlugin from "@axiom/ws";
 
 new Axiom()
   .use(uploadPlugin({ dest: "./uploads" }))
   .use(wsPlugin())
+  .use(swagger({ info: { title: "Axiom Bun Native API" } }))
   .derive(() => ({
     [$START_TIME]: performance.now(),
   }))

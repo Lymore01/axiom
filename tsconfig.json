@@ -20,7 +20,8 @@
       "@axiom/schema": ["packages/schema/src/index.ts"],
       "@axiom/upload": ["packages/plugins/upload/src/index.ts"],
       "@axiom/compression": ["packages/plugins/compression/src/index.ts"],
-      "@axiom/ws": ["packages/plugins/ws/src/index.ts"]
+      "@axiom/ws": ["packages/plugins/ws/src/index.ts"],
+      "@axiom/swagger": ["packages/plugins/swagger/src/index.ts"]
     },
     "types": ["node"]
   },

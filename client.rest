@@ -57,7 +57,7 @@ GET {{base_url}}/test
 
 ### CORS Pre-flight (OPTIONS)
 OPTIONS {{base_url}}/test
-Origin: http://localhost:5173
+Origin: http://localhost:3000
 Access-Control-Request-Method: GET
 Access-Control-Request-Headers: Content-Type
 

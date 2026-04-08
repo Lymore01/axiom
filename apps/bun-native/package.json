@@ -9,6 +9,8 @@
     "@axiom/adapter-bun": "workspace:*",
     "@axiom/core": "workspace:*",
     "@axiom/ws": "workspace:*",
+    "@axiom/swagger": "workspace:*",
+    "@axiom/upload": "workspace:*",
     "zod": "^3.23.8"
   },
   "devDependencies": {
