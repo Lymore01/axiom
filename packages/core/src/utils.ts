@@ -5,6 +5,10 @@ export interface AxiomValidationError {
   metadata?: any;
 }
 
+/**
+ * Converts a path string with parameters or wildcards into a Regular Expression.
+ * Also populates an array with the detected parameter names.
+ */
 export function createRegex(path: string, paramNames: string[] = []) {
   const regexSource = path
     .replace(/\//g, "\\/")
@@ -20,6 +24,9 @@ export function createRegex(path: string, paramNames: string[] = []) {
   return new RegExp(`^${regexSource}$`);
 }
 
+/**
+ * Standardizes schema validation errors into a consistent structure for API responses.
+ */
 export function formatValidationError(error: any): AxiomValidationError[] {
   const issues = error.issues || [];
 

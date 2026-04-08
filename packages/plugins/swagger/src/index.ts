@@ -23,8 +23,7 @@ export interface SwaggerOptions {
 
 /**
  * Axiom Swagger Plugin.
- * Automatically generates an OpenAPI 3.0.0 specification from your route schemas
- * and provides an interactive Swagger UI documentation page.
+ * Generates an OpenAPI 3.0 spec and provides a Scalar documentation UI.
  */
 export const swagger = (options: SwaggerOptions = {}) => {
   const info = {
@@ -87,7 +86,6 @@ export const swagger = (options: SwaggerOptions = {}) => {
           }
         }
 
-        // Path Parameters
         route.paramNames.forEach((name) => {
           op.parameters.push({
             name,
@@ -97,7 +95,6 @@ export const swagger = (options: SwaggerOptions = {}) => {
           });
         });
 
-        // Request Body
         if (route.schema?.body && ["post", "put", "patch"].includes(method)) {
           op.requestBody = {
             content: {

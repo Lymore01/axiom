@@ -14,9 +14,26 @@ import { createRegex, formatValidationError } from "./utils";
 export * from "./errors";
 export * from "./types";
 
+/**
+ * Internal symbol used to track the start time of a request.
+ */
 export const $START_TIME = Symbol("axiom:startTime");
+
+/**
+ * Internal symbol used to store the server instance in the context.
+ */
 export const $SERVER = Symbol("axiom:server");
 
+/**
+ * The primary engine of the Axiom framework.
+ *
+ * Axiom is a WinterTC-compliant, type-safe web framework designed for high-performance
+ * and modularity. It supports automatic runtime detection (Bun, Deno, Node) and
+ * provides a powerful plugin system.
+ *
+ * @template T - A record of route strings to their respective metadata, used for type-safe client generation.
+ * @template D - A record of objects and utilities available on the request context (decorators).
+ */
 export class Axiom<
   T extends Record<string, any> = {},
   D extends Record<string, any> = { logger: Logger },
@@ -45,6 +62,9 @@ export class Axiom<
 
   /**
    * Adds dynamic properties to the context by running a function before the route handler.
+   * Derivations can be asynchronous and can return a Response to short-circuit the request.
+   *
+   * @param fn - A function that receives the current context and returns new properties to merge.
    */
   derive<NewD extends Record<string, any>>(
     fn: (
@@ -57,6 +77,10 @@ export class Axiom<
 
   /**
    * Registers a plugin.
+   * Plugins are functions that receive the Axiom instance and can register routes,
+   * hooks, or decorators.
+   *
+   * @param plugin - The plugin function to execute.
    */
   use<NewT extends Record<string, any>, NewD extends Record<string, any>>(
     plugin: (app: Axiom<T, D>) => Axiom<NewT, NewD>,
@@ -65,7 +89,11 @@ export class Axiom<
   }
 
   /**
-   * Groups routes under a common path prefix and providing isolation for derivations and hooks.
+   * Groups routes under a common path prefix.
+   * This provides isolation for derivations and hooks within the group.
+   *
+   * @param prefix - The path prefix (e.g., "/api/v1").
+   * @param run - A function where you define the routes for this group.
    */
   group<
     Prefix extends string,
@@ -84,7 +112,6 @@ export class Axiom<
 
     const result = run(branch as any) as any;
 
-    // Merge routes from branch with prefix
     result.router.getRoutes().forEach((route: any) => {
       const fullPath = `${prefix}${route.path}`.replace(/\/+/g, "/");
       const paramNames: string[] = [];
@@ -93,7 +120,7 @@ export class Axiom<
         ...route,
         path: fullPath,
         regex: createRegex(fullPath, paramNames),
-        paramNames: paramNames, // Update param names
+        paramNames: paramNames,
       });
     });
 
@@ -102,6 +129,9 @@ export class Axiom<
 
   /**
    * Adds static properties to the context.
+   * Decorators are available on every request context immediately.
+   *
+   * @param obj - An object containing properties to add to the context.
    */
   decorate<NewD extends Record<string, any>>(obj: NewD): Axiom<T, D & NewD> {
     this.decorators = { ...this.decorators, ...obj };
@@ -181,6 +211,12 @@ export class Axiom<
 
   /**
    * Main entry point for handling requests.
+   *
+   * This is the standard WinterTC interface that converts a Request into a Response.
+   * It executes the entire request lifecycle including hooks, derivations, and validation.
+   *
+   * @param incomingRequest - The standard Web Request object.
+   * @returns A promise resolving to a standard Web Response object.
    */
   async handle(incomingRequest: Request): Promise<Response> {
     const url = new URL(incomingRequest.url);
@@ -210,7 +246,6 @@ export class Axiom<
     let ctx = Object.create(null);
 
     try {
-      // 1. Initial Context Setup
       const rawParams: any = {};
       route.paramNames.forEach((name, index) => {
         rawParams[name] = match[index + 1];
@@ -218,7 +253,6 @@ export class Axiom<
 
       const responseHeaders: Record<string, string> = {};
 
-      // Internal Metadata
       (ctx as any)[$SERVER] = this.server;
 
       Object.assign(ctx, route.decorators);
@@ -232,7 +266,6 @@ export class Axiom<
       };
       ctx.getResponseHeaders = () => responseHeaders;
 
-      // 2. Body Parsing
       if (method !== "GET" && method !== "HEAD") {
         const contentType = incomingRequest.headers.get("content-type");
         try {
@@ -249,14 +282,12 @@ export class Axiom<
         }
       }
 
-      // 3. Global Global/Local Hooks: onRequest
       if (route.onRequests && route.onRequests.length > 0) {
         for (const onRequestFn of route.onRequests) {
           await onRequestFn(ctx);
         }
       }
 
-      // 4. Derivations
       if (route.derives && route.derives.length > 0) {
         for (const deriveFn of route.derives) {
           const result = await deriveFn(ctx);
@@ -265,7 +296,6 @@ export class Axiom<
         }
       }
 
-      // 5. Hooks: beforeHandle
       if (route.beforeHandles && route.beforeHandles.length > 0) {
         for (const hook of route.beforeHandles) {
           const response = await hook(ctx);
@@ -273,7 +303,6 @@ export class Axiom<
         }
       }
 
-      // 6. Schema Validation
       if (route.schema) {
         try {
           if (route.schema.params)
@@ -299,7 +328,6 @@ export class Axiom<
         }
       }
 
-      // 7. Route Handler
       const data = await route.handler(ctx);
       if (data instanceof Response) return data;
 
@@ -316,7 +344,6 @@ export class Axiom<
         response.headers.set(name, value as string);
       });
 
-      // 8. Hooks: onResponse
       if (route.onResponses && route.onResponses.length > 0) {
         for (const onResponseFn of route.onResponses) {
           const result = await onResponseFn(response, ctx);
@@ -324,7 +351,6 @@ export class Axiom<
         }
       }
 
-      // 9. Hooks: afterHandle
       if (route.afterHandles && route.afterHandles.length > 0) {
         for (const hook of route.afterHandles) {
           const result = await hook(ctx);
@@ -341,17 +367,26 @@ export class Axiom<
     }
   }
 
-  // Hook Registration Delegates
+  /**
+   * Registers a global error handler.
+   */
   onError(fn: (error: any, ctx: Context<any, any, D>) => any): this {
     this.errorHandler = fn;
     return this;
   }
 
+  /**
+   * Registers a global hook that runs as soon as a request is received.
+   */
   onRequest(fn: (ctx: Context<any, any, D>) => void | Promise<void>): this {
     this.hooks.addRequestHook(fn as any);
     return this;
   }
 
+  /**
+   * Registers a hook that runs before the router attempts to match a path.
+   * Useful for global redirects or early security checks.
+   */
   onBeforeMatch(
     fn: (req: Request) => Response | undefined | Promise<Response | undefined>,
   ): this {
@@ -359,6 +394,10 @@ export class Axiom<
     return this;
   }
 
+  /**
+   * Registers a global hook that runs after a Response has been created.
+   * Allows modifying headers or the body before it's sent.
+   */
   onResponse(
     fn: (
       res: Response,
@@ -369,6 +408,9 @@ export class Axiom<
     return this;
   }
 
+  /**
+   * Registers a hook that runs before the route handler is executed.
+   */
   onBeforeHandle(
     fn: (
       ctx: Context<any, any, D>,
@@ -378,6 +420,9 @@ export class Axiom<
     return this;
   }
 
+  /**
+   * Registers a hook that runs after the route handler is executed.
+   */
   onAfterHandle(
     fn: (
       ctx: Context<any, any, D>,
@@ -387,7 +432,12 @@ export class Axiom<
     return this;
   }
 
-  // server sent events
+  /**
+   * Registers a Server-Sent Events (SSE) route.
+   *
+   * @param path - The path for the SSE stream.
+   * @param handler - A function returning an async iterable that yields data chunks.
+   */
   sse<T = any>(
     path: string,
     handler: (ctx: any) => AsyncIterable<T> | Promise<AsyncIterable<T>>,
@@ -424,6 +474,8 @@ export class Axiom<
    * Automatically detect the runtime and start a server.
    * Currently supports: Bun, Deno.
    * For Node, use a specific adapter like @axiom/adapter-express.
+   *
+   * @param portOrOptions - The port number or a server options object.
    */
   listen(portOrOptions: number | any = 3000): any {
     const options =

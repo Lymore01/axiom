@@ -7,6 +7,10 @@ export interface ExpressAdapterOptions {
   onListen?: () => void;
 }
 
+/**
+ * Bridges the Axiom engine with an Express application.
+ * Handles the conversion of Node.js req/res to Web Request/Response.
+ */
 export function createExpressAdapter(
   axiom: Axiom<any, any>,
   app: Express = express(),

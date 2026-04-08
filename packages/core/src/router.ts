@@ -2,10 +2,16 @@ import { RadixTree } from "./radix";
 import type { Handler, Route, RouteSchema } from "./types";
 import { createRegex } from "./utils";
 
+/**
+ * Manages route registration and path matching using a Radix Tree.
+ */
 export class Router<D extends Record<string, any>> {
   private tree = new RadixTree<D>();
-  private routes: Route<D>[] = []; // Keep for backward compatibility or getRoutes()
+  private routes: Route<D>[] = [];
 
+  /**
+   * Registers a new route with its associated state (hooks, derivations, and decorators).
+   */
   add<Path extends string, S extends RouteSchema, Return>(
     method: string,
     path: Path,
@@ -44,6 +50,9 @@ export class Router<D extends Record<string, any>> {
     return route;
   }
 
+  /**
+   * Finds a matching route for the given method and pathname.
+   */
   match(method: string, pathname: string) {
     const result = this.tree.match(method, pathname);
 

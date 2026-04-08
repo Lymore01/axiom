@@ -1,3 +1,7 @@
+/**
+ * Base error class for all Axiom-related failures.
+ * These are automatically caught and converted into structured JSON responses.
+ */
 export class AxiomError extends Error {
   constructor(
     public message: string,

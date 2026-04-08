@@ -65,14 +65,12 @@ export class RadixNode<D extends Record<string, any>> {
 
     const currentSegment = segments[index];
 
-    // 1. Try static match
     const child = this.children.get(currentSegment);
     if (child) {
       const result = child.search(segments, method, index + 1, params);
       if (result) return result;
     }
 
-    // 2. Try wildcard match
     if (this.wildcardChild && this.wildcardChild.paramName) {
       const newParams = {
         ...params,
@@ -87,7 +85,6 @@ export class RadixNode<D extends Record<string, any>> {
       if (result) return result;
     }
 
-    // 3. Try catch-all match
     if (this.catchAllChild) {
       const route = this.catchAllChild.handlers.get(method);
       if (route) {
@@ -101,6 +98,9 @@ export class RadixNode<D extends Record<string, any>> {
   }
 }
 
+/**
+ * A High-performance path matching tree that supports static, parameter (:id), and catch-all (*) segments.
+ */
 export class RadixTree<D extends Record<string, any>> {
   private root: RadixNode<D> = new RadixNode("");
 

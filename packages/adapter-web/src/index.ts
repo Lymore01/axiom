@@ -12,12 +12,6 @@ export interface WebAdapterOptions {
 /**
  * Creates a standard Web (Fetch API) compatible handler for Axiom.
  * This works natively with Next.js, SvelteKit, Astro, SolidStart, and more.
- *
- * @example
- * // Next.js: app/api/[...axiom]/route.ts
- * // SvelteKit: src/routes/api/[...axiom]/+server.ts
- * const app = new Axiom().get("/hello", () => "Hi");
- * export const { GET, POST } = createWebHandler(app, { basePath: "/api" });
  */
 export function createWebHandler(
   axiom: Axiom<any, any>,

@@ -15,6 +15,8 @@ declare module "@axiom/core" {
   interface Axiom<T, D> {
     /**
      * Registers a WebSocket route.
+     * Triggers a '101 Switching Protocols' response and delegates to the runtime's native upgrade handler.
+     * 
      * @param path The route path.
      * @param handlers WebSocket lifecycle handlers (open, message, close, etc.).
      */

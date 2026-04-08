@@ -1,5 +1,9 @@
 import type { Context } from "./types";
 
+/**
+ * Manages the global and local request lifecycle hooks.
+ * Hooks allow for cross-cutting concerns like logging, security, and response modification.
+ */
 export class Hooks<D extends Record<string, any>> {
   public onRequests: Array<(ctx: Context<any, any, D>) => void | Promise<void>> = [];
   public onBeforeMatch: Array<(req: Request) => Response | undefined | Promise<Response | undefined>> = [];

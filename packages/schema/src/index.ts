@@ -21,7 +21,7 @@ export interface Validator<T = any> {
 export type Infer<S> = S extends Validator<infer T> ? T : never;
 
 /**
- * Base Schema class providing common modifiers.
+ * Base Schema class providing chainable modifiers for all schema types.
  */
 export abstract class AxiomSchema<T> implements Validator<T> {
   readonly _output!: T;
@@ -30,12 +30,19 @@ export abstract class AxiomSchema<T> implements Validator<T> {
   protected _defaultValue?: T;
   protected _transforms: Array<(data: any) => any> = [];
 
+  /**
+   * Generates a standard JSON Schema representation of the validator.
+   */
   abstract toJSONSchema(): any;
 
   protected abstract _validate(data: unknown): ValidationResult<T>;
 
+  /**
+   * Validates and parses the input data, applying all transforms and refinements.
+   * Throws an error if validation fails.
+   */
   async parse(data: unknown): Promise<T> {
-    // 1. Handle missing / null values
+    // Handle missing / null values
     if (data === undefined) {
       if (this._defaultValue !== undefined) data = this._defaultValue;
       else if (this._isOptional) return undefined as any;
@@ -47,11 +54,11 @@ export abstract class AxiomSchema<T> implements Validator<T> {
       throw new Error("Field cannot be null");
     }
 
-    // 2. Perform Type Validation
+    // Perform Type Validation
     const result = this._validate(data);
     if (!result.success) throw new Error(result.error);
 
-    // 3. Apply Transforms/Refinements
+    // Apply Transforms/Refinements
     let finalData = result.data;
     for (const transform of this._transforms) {
       finalData = await transform(finalData);
@@ -59,26 +66,41 @@ export abstract class AxiomSchema<T> implements Validator<T> {
     return finalData;
   }
 
+  /**
+   * Marks the field as optional, allowing 'undefined' inputs.
+   */
   optional(): this & AxiomSchema<T | undefined> {
     this._isOptional = true;
     return this as any;
   }
 
+  /**
+   * Marks the field as nullable, allowing 'null' inputs.
+   */
   nullable(): this & AxiomSchema<T | null> {
     this._isNullable = true;
     return this as any;
   }
 
+  /**
+   * Sets a default value if the input is missing.
+   */
   default(val: T): this {
     this._defaultValue = val;
     return this;
   }
 
+  /**
+   * Transforms the validated output into a new value or type.
+   */
   transform<U>(fn: (data: T) => U | Promise<U>): AxiomSchema<U> & this {
     this._transforms.push(fn);
     return this as any;
   }
 
+  /**
+   * Adds a custom validation check. Throws if the function returns false.
+   */
   refine(
     fn: (data: T) => boolean | Promise<boolean>,
     message = "Invalid value",
@@ -105,7 +127,9 @@ class StringSchema extends AxiomSchema<string> {
       type: "string",
       ...(this._isOptional ? { optional: true } : {}),
       ...(this._isNullable ? { nullable: true } : {}),
-      ...(this._defaultValue !== undefined ? { default: this._defaultValue } : {}),
+      ...(this._defaultValue !== undefined
+        ? { default: this._defaultValue }
+        : {}),
     };
   }
 
@@ -180,7 +204,9 @@ class NumberSchema extends AxiomSchema<number> {
       type: "number",
       ...(this._isOptional ? { optional: true } : {}),
       ...(this._isNullable ? { nullable: true } : {}),
-      ...(this._defaultValue !== undefined ? { default: this._defaultValue } : {}),
+      ...(this._defaultValue !== undefined
+        ? { default: this._defaultValue }
+        : {}),
     };
   }
 
@@ -223,7 +249,9 @@ class BooleanSchema extends AxiomSchema<boolean> {
       type: "boolean",
       ...(this._isOptional ? { optional: true } : {}),
       ...(this._isNullable ? { nullable: true } : {}),
-      ...(this._defaultValue !== undefined ? { default: this._defaultValue } : {}),
+      ...(this._defaultValue !== undefined
+        ? { default: this._defaultValue }
+        : {}),
     };
   }
 }
@@ -410,16 +438,24 @@ export type MimeType =
   | (string & {});
 
 /**
- * The 's' export - The main library interface.
+ * The main library interface.
+ * Use this to create new schema validators.
  */
 export const s = {
+  /** Create a string validator */
   string: () => new StringSchema(),
+  /** Create a number validator */
   number: () => new NumberSchema(),
+  /** Create a boolean validator */
   boolean: () => new BooleanSchema(),
+  /** Create a validator that allows any input */
   any: () => new AnySchema(),
+  /** Create an object validator from a shape record */
   object: <T extends Record<string, Validator>>(shape: T) =>
     new ObjectSchema(shape),
+  /** Create an array validator for a specific item type */
   array: <T extends Validator>(item: T) => new ArraySchema(item),
+  /** Create a file/blob validator */
   file: () => new FileSchema(),
 };
 
