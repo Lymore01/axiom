@@ -1,0 +1,53 @@
+import type { Axiom } from "@axiom/core";
+
+export interface WSHandlers {
+  open?: (ws: any) => void | Promise<void>;
+  message?: (ws: any, message: any) => void | Promise<void>;
+  close?: (ws: any, code: number, reason: string) => void | Promise<void>;
+  error?: (ws: any, error: any) => void | Promise<void>;
+}
+
+/**
+ * Axiom WebSocket Plugin.
+ * Adds the .ws() method to the Axiom instance.
+ */
+declare module "@axiom/core" {
+  interface Axiom<T, D> {
+    /**
+     * Registers a WebSocket route.
+     * @param path The route path.
+     * @param handlers WebSocket lifecycle handlers (open, message, close, etc.).
+     */
+    ws(path: string, handlers: WSHandlers): this;
+  }
+}
+
+export const wsPlugin = () => {
+  return <T extends Record<string, any>, D extends Record<string, any>>(
+    app: Axiom<T, D>,
+  ): Axiom<T, D> => {
+    // Augment the instance with the .ws method at runtime
+    (app as any).ws = function (path: string, handlers: WSHandlers) {
+      // @ts-ignore - access protected addRoute
+      return this.addRoute(
+        "GET",
+        path,
+        () => {
+          return new Response(null, {
+            status: 101,
+            headers: {
+              Upgrade: "websocket",
+              Connection: "Upgrade",
+            },
+          });
+        },
+        undefined,
+        { ws: handlers },
+      );
+    };
+
+    return app;
+  };
+};
+
+export default wsPlugin;

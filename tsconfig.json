@@ -19,7 +19,8 @@
       "@axiom/rate-limit": ["packages/plugins/rate-limit/src/index.ts"],
       "@axiom/schema": ["packages/schema/src/index.ts"],
       "@axiom/upload": ["packages/plugins/upload/src/index.ts"],
-      "@axiom/compression": ["packages/plugins/compression/src/index.ts"]
+      "@axiom/compression": ["packages/plugins/compression/src/index.ts"],
+      "@axiom/ws": ["packages/plugins/ws/src/index.ts"]
     },
     "types": ["node"]
   },

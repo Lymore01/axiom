@@ -1,9 +1,11 @@
 import Axiom, { $START_TIME } from "@axiom/core";
 import s from "@axiom/schema";
 import uploadPlugin from "@axiom/upload";
+import wsPlugin from "@axiom/ws";
 
 new Axiom()
   .use(uploadPlugin({ dest: "./uploads" }))
+  .use(wsPlugin())
   .derive(() => ({
     [$START_TIME]: performance.now(),
   }))
@@ -17,6 +19,19 @@ new Axiom()
   .decorate({
     runtime: "Bun " + Bun.version,
     startedAt: new Date(),
+  })
+  .ws("/chat", {
+    open(ws) {
+      console.log("\x1b[36m[WS]\x1b[0m Client connected!");
+      ws.send("Welcome to Axiom WebSocket!");
+    },
+    message(ws, msg) {
+      console.log(`\x1b[36m[WS]\x1b[0m Received: ${msg}`);
+      ws.send(`Echo: ${msg}`);
+    },
+    close(ws) {
+      console.log("\x1b[36m[WS]\x1b[0m Client disconnected.");
+    },
   })
   .get("/", (ctx) => {
     return {

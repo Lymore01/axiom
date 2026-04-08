@@ -1,4 +1,5 @@
 import { authPlugin, authRoutes } from "@axiom/auth";
+import { wsPlugin } from "@axiom/ws";
 import { compression } from "@axiom/compression";
 import Axiom from "@axiom/core";
 import { cors } from "@axiom/cors";
@@ -10,6 +11,7 @@ import { staticPlugin } from "@axiom/static";
 import uploadPlugin from "@axiom/upload";
 
 export const axiom = new Axiom()
+  .use(wsPlugin())
   .use(authPlugin({ secret: "DEVELOPMENT_SECRET_KEY" }))
   .use(uploadPlugin({ dest: "./uploads" }))
   .use(compression({ threshold: 1024 }))
@@ -27,6 +29,16 @@ export const axiom = new Axiom()
     db: { query: (sql: string) => `Result for ${sql}` },
   })
   .use(authRoutes)
+  .ws("/chat", {
+    open(ws) {
+      console.log("\x1b[36m[Node WS]\x1b[0m Client connected!");
+      ws.send("Welcome to Axiom WebSocket (Node/Express)!");
+    },
+    message(ws, msg) {
+      console.log(`\x1b[36m[Node WS]\x1b[0m Received: ${msg}`);
+      ws.send(`Echo (Node): ${msg}`);
+    },
+  })
   .post(
     "/test",
     ({ body }) => {

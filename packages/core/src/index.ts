@@ -21,7 +21,7 @@ export class Axiom<
   T extends Record<string, any> = {},
   D extends Record<string, any> = { logger: Logger },
 > {
-  private router = new Router<any>();
+  public router = new Router<any>();
   private hooks = new Hooks<any>();
   private server: any;
   private derives: Array<(ctx: any) => any> = [];
@@ -108,7 +108,7 @@ export class Axiom<
     return this as Axiom<T, D & NewD>;
   }
 
-  private addRoute<
+  protected addRoute<
     Method extends string,
     Path extends string,
     S extends RouteSchema = {},
@@ -118,6 +118,7 @@ export class Axiom<
     path: Path,
     handler: Handler<Path, S, D, Return>,
     schema?: S,
+    metadata?: Record<string, any>,
   ) {
     this.router.add(
       method,
@@ -129,6 +130,7 @@ export class Axiom<
         ...this.hooks.getState(),
       },
       schema,
+      metadata,
     );
 
     return this as unknown as Axiom<
@@ -436,7 +438,27 @@ export class Axiom<
       this.server = Bun.serve({
         ...options,
         port,
-        fetch: (req: Request) => this.handle(req),
+        fetch: async (req: Request, server: any) => {
+          const res = await this.handle(req);
+          if (res.status === 101) {
+            const url = new URL(req.url);
+            const matched = this.router.match(req.method, url.pathname);
+            if (matched && matched.route.metadata?.ws) {
+              const success = server.upgrade(req, {
+                data: matched.route.metadata.ws,
+              });
+              if (success) return undefined;
+            }
+          }
+          return res;
+        },
+        websocket: {
+          open: (ws: any) => ws.data.open?.(ws),
+          message: (ws: any, message: any) => ws.data.message?.(ws, message),
+          close: (ws: any, code: number, reason: string) =>
+            ws.data.close?.(ws, code, reason),
+          error: (ws: any, error: any) => ws.data.error?.(ws, error),
+        },
       });
 
       console.log(`\x1b[32m Axiom listening on ${this.server.url}\x1b[0m`);
@@ -446,7 +468,24 @@ export class Axiom<
     // @ts-ignore - Deno detection
     if (typeof Deno !== "undefined" && typeof Deno.serve === "function") {
       // @ts-ignore
-      this.server = Deno.serve({ ...options, port }, (req) => this.handle(req));
+      this.server = Deno.serve({ ...options, port }, async (req) => {
+        const res = await this.handle(req);
+        if (res.status === 101) {
+          const url = new URL(req.url);
+          const matched = this.router.match(req.method, url.pathname);
+          if (matched && matched.route.metadata?.ws) {
+            // @ts-ignore
+            const { socket, response } = Deno.upgradeWebSocket(req);
+            const handlers = matched.route.metadata.ws;
+            socket.onopen = () => handlers.open?.(socket);
+            socket.onmessage = (e: any) => handlers.message?.(socket, e.data);
+            socket.onclose = () => handlers.close?.(socket);
+            socket.onerror = (e: any) => handlers.error?.(socket, e);
+            return response;
+          }
+        }
+        return res;
+      });
       return this.server;
     }
 

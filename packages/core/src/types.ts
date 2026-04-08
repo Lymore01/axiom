@@ -112,4 +112,5 @@ export interface Route<D extends Record<string, any> = any> {
       ctx: Context<any, any, D>,
     ) => Response | undefined | Promise<Response | undefined>
   >;
+  metadata?: Record<string, any>;
 }

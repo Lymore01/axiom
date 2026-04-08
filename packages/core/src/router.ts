@@ -19,6 +19,7 @@ export class Router<D extends Record<string, any>> {
       afterHandles: any[];
     },
     schema?: S,
+    metadata?: Record<string, any>,
   ) {
     const paramNames: string[] = [];
 
@@ -29,6 +30,7 @@ export class Router<D extends Record<string, any>> {
       handler: handler as any,
       paramNames,
       schema,
+      metadata,
       derives: [...state.derives],
       decorators: { ...state.decorators },
       onRequests: [...state.onRequests],
