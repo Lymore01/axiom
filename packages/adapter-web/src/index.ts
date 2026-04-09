@@ -27,6 +27,7 @@ export function createWebHandler(
         url.pathname = newPathname;
 
         requestToHandle = new Request(url.toString(), req);
+        requestToHandle.headers.set("X-Axeom-Base", options.basePath);
       }
     }
 

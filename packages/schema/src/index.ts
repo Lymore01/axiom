@@ -12,6 +12,7 @@ type ValidationResult<T> =
  */
 export interface Validator<T = any> {
   readonly _output: T;
+  readonly _isOptional?: boolean;
   parse: (data: unknown) => T | Promise<T>;
 }
 
@@ -25,7 +26,9 @@ export type Infer<S> = S extends Validator<infer T> ? T : never;
  */
 export abstract class AxeomSchema<T> implements Validator<T> {
   readonly _output!: T;
-  protected _isOptional = false;
+  readonly _isOptional!: boolean;
+
+  protected _isOptionalVal = false;
   protected _isNullable = false;
   protected _defaultValue?: T;
   protected _transforms: Array<(data: any) => any> = [];
@@ -45,7 +48,7 @@ export abstract class AxeomSchema<T> implements Validator<T> {
     // Handle missing / null values
     if (data === undefined) {
       if (this._defaultValue !== undefined) data = this._defaultValue;
-      else if (this._isOptional) return undefined as any;
+      else if (this._isOptionalVal) return undefined as any;
       else throw new Error("Required field is missing");
     }
 
@@ -69,15 +72,15 @@ export abstract class AxeomSchema<T> implements Validator<T> {
   /**
    * Marks the field as optional, allowing 'undefined' inputs.
    */
-  optional(): this & AxeomSchema<T | undefined> {
-    this._isOptional = true;
+  optional(): this & { readonly _isOptional: true; readonly _output: T | undefined } {
+    this._isOptionalVal = true;
     return this as any;
   }
 
   /**
    * Marks the field as nullable, allowing 'null' inputs.
    */
-  nullable(): this & AxeomSchema<T | null> {
+  nullable(): this & { readonly _output: T | null } {
     this._isNullable = true;
     return this as any;
   }
@@ -125,7 +128,7 @@ class StringSchema extends AxeomSchema<string> {
   toJSONSchema() {
     return {
       type: "string",
-      ...(this._isOptional ? { optional: true } : {}),
+      ...(this._isOptionalVal ? { optional: true } : {}),
       ...(this._isNullable ? { nullable: true } : {}),
       ...(this._defaultValue !== undefined
         ? { default: this._defaultValue }
@@ -202,7 +205,7 @@ class NumberSchema extends AxeomSchema<number> {
   toJSONSchema() {
     return {
       type: "number",
-      ...(this._isOptional ? { optional: true } : {}),
+      ...(this._isOptionalVal ? { optional: true } : {}),
       ...(this._isNullable ? { nullable: true } : {}),
       ...(this._defaultValue !== undefined
         ? { default: this._defaultValue }
@@ -247,7 +250,7 @@ class BooleanSchema extends AxeomSchema<boolean> {
   toJSONSchema() {
     return {
       type: "boolean",
-      ...(this._isOptional ? { optional: true } : {}),
+      ...(this._isOptionalVal ? { optional: true } : {}),
       ...(this._isNullable ? { nullable: true } : {}),
       ...(this._defaultValue !== undefined
         ? { default: this._defaultValue }
@@ -270,19 +273,50 @@ class AnySchema extends AxeomSchema<any> {
 }
 
 /**
+ * Enum Schema - Validates that the input is one of a specific set of strings.
+ */
+class EnumSchema<T extends string> extends AxeomSchema<T> {
+  constructor(private values: T[]) {
+    super();
+  }
+  protected _validate(data: unknown): ValidationResult<T> {
+    return typeof data === "string" && this.values.includes(data as T)
+      ? { success: true, data: data as T }
+      : {
+          success: false,
+          error: `Invalid value. Expected one of: ${this.values.join(", ")}`,
+        };
+  }
+
+  toJSONSchema() {
+    return {
+      type: "string",
+      enum: this.values,
+    };
+  }
+}
+
+/**
+ * Type to correctly infer optional vs required properties in an object schema.
+ */
+export type InferObject<T extends Record<string, Validator>> = {
+  [K in keyof T as T[K] extends { _isOptional: true } ? never : K]: T[K]["_output"];
+} & {
+  [K in keyof T as T[K] extends { _isOptional: true } ? K : never]?: T[K]["_output"];
+};
+
+/**
  * Object Schema - Handles recursive validation of properties
  */
-class ObjectSchema<T extends Record<string, Validator>> extends AxeomSchema<{
-  [K in keyof T]: T[K]["_output"];
-}> {
+class ObjectSchema<T extends Record<string, Validator>> extends AxeomSchema<InferObject<T>> {
   constructor(private shape: T) {
     super();
   }
 
-  protected _validate(
-    data: unknown,
-  ): ValidationResult<{ [K in keyof T]: T[K]["_output"] }> {
-    return { success: true, data: data as any };
+  protected _validate(data: unknown): ValidationResult<InferObject<T>> {
+    return typeof data === "object" && data !== null
+      ? { success: true, data: data as InferObject<T> }
+      : { success: false, error: "Expected object" };
   }
 
   toJSONSchema() {
@@ -294,13 +328,13 @@ class ObjectSchema<T extends Record<string, Validator>> extends AxeomSchema<{
       type: "object",
       properties,
       required: Object.keys(this.shape).filter(
-        (key) => !(this.shape[key] as any)._isOptional,
+        (key) => !(this.shape[key] as any)._isOptionalVal,
       ),
     };
   }
 
-  async parse(data: unknown): Promise<{ [K in keyof T]: T[K]["_output"] }> {
-    const base = await super.parse(data);
+  async parse(data: unknown): Promise<InferObject<T>> {
+    const base = (await super.parse(data)) as any;
     const result: any = {};
     const errors: string[] = [];
 
@@ -316,7 +350,7 @@ class ObjectSchema<T extends Record<string, Validator>> extends AxeomSchema<{
       throw new Error(errors.join(", "));
     }
 
-    return result;
+    return result as InferObject<T>;
   }
 }
 
@@ -450,9 +484,10 @@ export const s = {
   boolean: () => new BooleanSchema(),
   /** Create a validator that allows any input */
   any: () => new AnySchema(),
+  /** Create an enum validator from an array of strings */
+  enum: <T extends string>(values: T[]) => new EnumSchema(values),
   /** Create an object validator from a shape record */
-  object: <T extends Record<string, Validator>>(shape: T) =>
-    new ObjectSchema(shape),
+  object: <T extends Record<string, Validator>>(shape: T) => new ObjectSchema(shape),
   /** Create an array validator for a specific item type */
   array: <T extends Validator>(item: T) => new ArraySchema(item),
   /** Create a file/blob validator */

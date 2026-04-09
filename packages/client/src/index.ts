@@ -16,22 +16,37 @@ type MethodName<M extends string> = M extends "GET"
  * Maps the server registry to a client structure segment-by-segment.
  */
 export type AxeomClient<T extends Record<string, any>> = {
-  // Path building (e.g., client.users)
+  // 1. Path Building: Handles nested segments (e.g., client.users)
   [K in keyof T as K extends `${string} /${infer Segment}/${string}`
     ? Segment
     : never]: AxeomClient<{
-    [P in keyof T as P extends `${infer Method} /${K extends `${string} /${infer S}/${string}` ? S : never}/${infer Rest}`
+    [P in keyof T as P extends `${infer Method} /${K extends `${string} /${infer S}/${string}`
+      ? S
+      : never}/${infer Rest}`
       ? `${Method} /${Rest}`
       : never]: T[P];
   }>;
 } & {
-  // Method execution (e.g., client.users.get())
+  // 2. Direct Methods: Handles methods for the current path (e.g., client.get() at root)
+  [M in keyof T as M extends `${infer Method} /`
+    ? MethodName<Method>
+    : never]: (
+    ...args: {} extends T[M]["input"]
+      ? [options?: T[M]["input"]]
+      : [options: T[M]["input"]]
+  ) => Promise<T[M]["output"]>;
+} & {
+  // 3. Leaf Segments: Handles final segments (e.g., client.users.get())
   [K in keyof T as K extends `${string} /${infer Path}`
     ? Path extends `${string}/${string}`
       ? never
-      : Path
+      : Path extends ""
+        ? never
+        : Path
     : never]: {
-    [M in keyof T as M extends `${infer Method} /${K extends `${string} /${infer P}` ? P : never}`
+    [M in keyof T as M extends `${infer Method} /${K extends `${string} /${infer P}`
+      ? P
+      : never}`
       ? MethodName<Method>
       : never]: (
       ...args: {} extends T[M]["input"]
@@ -45,8 +60,6 @@ export type InferRegistry<A> = A extends Axeom<infer T, any> ? T : never;
 
 /**
  * Creates a type-safe client for the given Axeom app's registry.
- * It can accept either the Axeom instance type or the registry type itself.
- * Works at runtime
  */
 export function createAxeomClient<T extends Record<string, any>>(
   baseUrl: string = "/",
@@ -54,7 +67,6 @@ export function createAxeomClient<T extends Record<string, any>>(
   const createProxy = (pathParts: string[] = []): any => {
     return new Proxy(() => {}, {
       get(_, prop: string) {
-        // If it's a HTTP method name, execute the fetch
         const method = prop.toUpperCase();
         if (["GET", "POST", "PUT", "PATCH", "DELETE"].includes(method)) {
           return async (options: any = {}) => {
@@ -67,8 +79,21 @@ export function createAxeomClient<T extends Record<string, any>>(
               });
             }
 
+            // Normalizing Base URL for the URL constructor
+            const origin = typeof window !== "undefined" 
+              ? window.location.origin 
+              : "http://localhost";
+            
+            const baseWithSlash = baseUrl.startsWith("http") 
+              ? baseUrl 
+              : origin + (baseUrl.startsWith("/") ? "" : "/") + baseUrl;
+            
+            const url = new URL(
+              (baseWithSlash.endsWith("/") ? baseWithSlash.slice(0, -1) : baseWithSlash) + fullPath,
+              origin
+            );
+
             // Handle query parameters
-            const url = new URL(fullPath, baseUrl);
             if (options.query) {
               Object.entries(options.query).forEach(([key, value]) => {
                 if (value !== undefined) {
@@ -86,8 +111,9 @@ export function createAxeomClient<T extends Record<string, any>>(
             });
 
             if (!response.ok) {
+              const text = await response.text();
               throw new Error(
-                `API Error: ${response.status} ${response.statusText}`,
+                `API Error: ${response.status} ${text || response.statusText}`,
               );
             }
 
@@ -95,12 +121,9 @@ export function createAxeomClient<T extends Record<string, any>>(
           };
         }
 
-        // Otherwise, continue building the path
         return createProxy([...pathParts, prop]);
       },
-      // Handle the case where the segment itself is a dynamic parameter or a function call (rare but possible)
       apply(_, __, args) {
-        // If called as a function, use the argument as a path segment (for dynamic params)
         return createProxy([...pathParts, String(args[0])]);
       },
     });

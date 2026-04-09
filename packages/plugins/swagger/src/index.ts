@@ -38,12 +38,18 @@ export const swagger = (options: SwaggerOptions = {}) => {
   return <T extends Record<string, any>, D extends Record<string, any>>(
     app: Axeom<T, D>,
   ) => {
-    app.get(swaggerPath, () => {
+    app.get(swaggerPath, ({ request }) => {
       const routes = app.router.getRoutes();
       const paths: any = {};
 
+      const url = new URL(request.url);
+      const basePath =
+        request.headers.get("X-Axeom-Base") ||
+        url.pathname.replace(swaggerPath, "") ||
+        "/";
+
       routes.forEach((route) => {
-        // Convert internal path :param to swagger {param}
+        // ... rest of path conversion logic ...
         const path = route.path.replace(/:(\w+)/g, "{$1}");
         const method = route.method.toLowerCase();
 
@@ -109,6 +115,7 @@ export const swagger = (options: SwaggerOptions = {}) => {
       return {
         openapi: "3.0.0",
         info,
+        servers: [{ url: basePath }],
         paths,
       };
     });
@@ -127,7 +134,7 @@ export const swagger = (options: SwaggerOptions = {}) => {
         <!-- Scalar Web Component -->
         <script
           id="api-reference"
-          data-url="${swaggerPath}"></script>
+          data-url="${swaggerPath.startsWith("/") ? swaggerPath.slice(1) : swaggerPath}"></script>
         <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
       </body>
     </html>`,
