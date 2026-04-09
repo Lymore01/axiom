@@ -1,5 +1,5 @@
 {
-  "name": "@axiom/rate-limit",
+  "name": "@axeom/rate-limit",
   "version": "1.0.0",
   "type": "module",
   "main": "src/index.ts",
@@ -9,6 +9,6 @@
     "typescript": "^5.0.0"
   },
   "peerDependencies": {
-    "@axiom/core": "workspace:*"
+    "@axeom/core": "workspace:*"
   }
 }

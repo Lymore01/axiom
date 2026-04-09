@@ -21,33 +21,33 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2
 
-  apps/bun:
+  examples/bun:
     dependencies:
-      '@axiom/auth':
+      '@axeom/auth':
         specifier: workspace:*
         version: link:../../packages/plugins/auth
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../packages/core
       zod:
         specifier: ^3.22.4
         version: 3.25.76
 
-  apps/bun-native:
+  examples/bun-native:
     dependencies:
-      '@axiom/adapter-bun':
+      '@axeom/adapter-bun':
         specifier: workspace:*
         version: link:../../packages/adapter-bun
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@axiom/swagger':
+      '@axeom/swagger':
         specifier: workspace:*
         version: link:../../packages/plugins/swagger
-      '@axiom/upload':
+      '@axeom/upload':
         specifier: workspace:*
         version: link:../../packages/plugins/upload
-      '@axiom/ws':
+      '@axeom/ws':
         specifier: workspace:*
         version: link:../../packages/plugins/ws
       zod:
@@ -58,9 +58,9 @@ importers:
         specifier: ^1.3.11
         version: 1.3.11
 
-  apps/cloudflare-workers:
+  examples/cloudflare-workers:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../packages/core
     devDependencies:
@@ -71,9 +71,9 @@ importers:
         specifier: ^3.109.2
         version: 3.114.17(@cloudflare/workers-types@4.20260403.1)
 
-  apps/deno:
+  examples/deno:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../packages/core
     devDependencies:
@@ -81,45 +81,45 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
 
-  apps/node-express:
+  examples/node-express:
     dependencies:
-      '@axiom/auth':
+      '@axeom/auth':
         specifier: workspace:*
         version: link:../../packages/plugins/auth
-      '@axiom/client':
+      '@axeom/client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@axiom/compression':
+      '@axeom/compression':
         specifier: workspace:*
         version: link:../../packages/plugins/compression
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@axiom/cors':
+      '@axeom/cors':
         specifier: workspace:*
         version: link:../../packages/plugins/cors
-      '@axiom/express':
+      '@axeom/express':
         specifier: workspace:*
         version: link:../../packages/adapter-express
-      '@axiom/logger-plugin':
+      '@axeom/logger-plugin':
         specifier: workspace:*
         version: link:../../packages/plugins/logger
-      '@axiom/rate-limit':
+      '@axeom/rate-limit':
         specifier: workspace:*
         version: link:../../packages/plugins/rate-limit
-      '@axiom/schema':
+      '@axeom/schema':
         specifier: workspace:*
         version: link:../../packages/schema
-      '@axiom/security':
+      '@axeom/security':
         specifier: workspace:*
         version: link:../../packages/plugins/security
-      '@axiom/static':
+      '@axeom/static':
         specifier: workspace:*
         version: link:../../packages/plugins/static
-      '@axiom/swagger':
+      '@axeom/swagger':
         specifier: workspace:*
         version: link:../../packages/plugins/swagger
-      '@axiom/ws':
+      '@axeom/ws':
         specifier: workspace:*
         version: link:../../packages/plugins/ws
       zod:
@@ -132,7 +132,7 @@ importers:
 
   packages/adapter-bun:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -142,7 +142,7 @@ importers:
 
   packages/adapter-express:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../core
       express:
@@ -159,15 +159,48 @@ importers:
         specifier: ^8.5.14
         version: 8.18.1
 
+  packages/adapter-web:
+    dependencies:
+      '@axeom/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/axeom:
+    dependencies:
+      '@axeom/client':
+        specifier: workspace:*
+        version: link:../client
+      '@axeom/core':
+        specifier: workspace:*
+        version: link:../core
+      '@axeom/express':
+        specifier: workspace:*
+        version: link:../adapter-express
+      '@axeom/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@axeom/schema':
+        specifier: workspace:*
+        version: link:../schema
+      '@axeom/swagger':
+        specifier: workspace:*
+        version: link:../plugins/swagger
+      '@axeom/web':
+        specifier: workspace:*
+        version: link:../adapter-web
+      '@axeom/ws':
+        specifier: workspace:*
+        version: link:../plugins/ws
+
   packages/client:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../core
 
   packages/core:
     dependencies:
-      '@axiom/logger':
+      '@axeom/logger':
         specifier: workspace:*
         version: link:../logger
       pino:
@@ -185,7 +218,7 @@ importers:
 
   packages/plugins/auth:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../core
       jose:
@@ -194,28 +227,28 @@ importers:
 
   packages/plugins/compression:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../core
 
   packages/plugins/cors:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../core
 
   packages/plugins/logger:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../core
-      '@axiom/logger':
+      '@axeom/logger':
         specifier: workspace:*
         version: link:../../logger
 
   packages/plugins/rate-limit:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../core
     devDependencies:
@@ -225,31 +258,31 @@ importers:
 
   packages/plugins/security:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../core
 
   packages/plugins/static:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../core
 
   packages/plugins/swagger:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../core
 
   packages/plugins/upload:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../core
 
   packages/plugins/ws:
     dependencies:
-      '@axiom/core':
+      '@axeom/core':
         specifier: workspace:*
         version: link:../../core
 

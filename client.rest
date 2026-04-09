@@ -1,5 +1,5 @@
 @base_url=http://localhost:3000
-@title=Axiom REST Adapter Example
+@title=Axeom REST Adapter Example
 
 ###
 POST {{base_url}}/posts

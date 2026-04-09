@@ -1,6 +1,6 @@
-# Axiom
+# Axeom
 
-**Axiom** is a high-performance, TypeScript-first web engine designed for extreme modularity and platform-independence. Build once, deploy anywhere (Node.js, Bun, Deno, Cloudflare Workers, etc.).
+**Axeom** is a high-performance, TypeScript-first web engine designed for extreme modularity and platform-independence. Build once, deploy anywhere (Node.js, Bun, Deno, Cloudflare Workers, etc.).
 
 ## Features
 
@@ -24,11 +24,11 @@ pnpm --filter node-express-example dev
 
 ## Core Stack
 
-- **`@axiom/core`**: The platform-agnostic routing engine.
-- **`@axiom/express`**: High-performance Express adapter for Node.js.
-- **`@axiom/auth`**: Modular authentication plugin & guards.
-- **`@axiom/cors`**: Global CORS & Pre-flight handler.
-- **`@axiom/security`**: Defensive security headers (HSTS, No-Sniff, XSS-Protection).
+- **`@axeom/core`**: The platform-agnostic routing engine.
+- **`@axeom/express`**: High-performance Express adapter for Node.js.
+- **`@axeom/auth`**: Modular authentication plugin & guards.
+- **`@axeom/cors`**: Global CORS & Pre-flight handler.
+- **`@axeom/security`**: Defensive security headers (HSTS, No-Sniff, XSS-Protection).
 
 ---
 

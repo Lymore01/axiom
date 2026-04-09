@@ -1,12 +1,12 @@
-import { createAxiomClient } from "@axiom/client";
-import type { axiom } from "./index.js";
+import { createAxeomClient } from "@axeom/client";
+import type { Axeom } from "./index.js";
 
 // 1. Create the client using only the server's type!
 // For nextjs change the base url to point to your next capture all endpoint
-const client = createAxiomClient<typeof axiom>("http://localhost:3000");
+const client = createAxeomClient<typeof Axeom>("http://localhost:3000");
 
 async function runTest() {
-  console.log("Testing Axiom E2E Client...");
+  console.log("Testing Axeom E2E Client...");
 
   try {
     // 2. This is 100% type-safe!

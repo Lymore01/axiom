@@ -1,4 +1,4 @@
-import type { Axiom } from "@axiom/core";
+import type { Axeom } from "@axeom/core";
 
 export type SecurityOptions = {
   hsts?: boolean | { maxAge?: number; includeSubDomains?: boolean };
@@ -18,7 +18,7 @@ export const securityHeaders = (options: SecurityOptions = {}) => {
   } = options;
 
   return <T extends Record<string, any>, D extends Record<string, any>>(
-    app: Axiom<T, D>,
+    app: Axeom<T, D>,
   ) => {
     return app.onResponse((res) => {
       const headers = new Headers(res.headers);

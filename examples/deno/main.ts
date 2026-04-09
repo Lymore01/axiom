@@ -1,13 +1,13 @@
-import Axiom from "@axiom/core";
+import Axeom from "@axeom/core";
 
-const axiom = new Axiom()
+const Axeom = new Axeom()
   .get("/", () => {
     return {
-      message: "Axiom running on Deno! 🦕",
+      message: "Axeom running on Deno! 🦕",
       runtime: "deno",
       version: Deno.version.deno,
     };
   })
   .get("/api/v1", () => ({ status: "OK" }));
 
-axiom.listen(3002);
+Axeom.listen(3002);

@@ -1,4 +1,4 @@
-import type { Axiom, Context } from "@axiom/core";
+import type { Axeom, Context } from "@axeom/core";
 
 export interface RateLimitOptions {
   /**
@@ -48,7 +48,7 @@ class MemoryStore implements RateLimitStore {
 }
 
 /**
- * Rate limiting plugin for Axiom.
+ * Rate limiting plugin for Axeom.
  */
 export const rateLimit = (options: RateLimitOptions = {}) => {
   const {
@@ -62,7 +62,7 @@ export const rateLimit = (options: RateLimitOptions = {}) => {
   const store = new MemoryStore();
 
   return <T extends Record<string, any>, D extends Record<string, any>>(
-    app: Axiom<T, D>,
+    app: Axeom<T, D>,
   ) => {
     return app.onBeforeHandle(async (ctx) => {
       const key = keyGenerator(ctx);

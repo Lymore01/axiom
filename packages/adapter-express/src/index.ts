@@ -1,4 +1,4 @@
-import type Axiom from "@axiom/core";
+import type Axeom from "@axeom/core";
 import express, { type Express } from "express";
 import { WebSocketServer } from "ws";
 
@@ -8,11 +8,11 @@ export interface ExpressAdapterOptions {
 }
 
 /**
- * Bridges the Axiom engine with an Express application.
+ * Bridges the Axeom engine with an Express application.
  * Handles the conversion of Node.js req/res to Web Request/Response.
  */
 export function createExpressAdapter(
-  axiom: Axiom<any, any>,
+  Axeom: Axeom<any, any>,
   app: Express = express(),
 ) {
   const wss = new WebSocketServer({ noServer: true });
@@ -30,7 +30,7 @@ export function createExpressAdapter(
         duplex: "half",
       });
 
-      const webResponse = await axiom.handle(webRequest);
+      const webResponse = await Axeom.handle(webRequest);
 
       webResponse.headers.forEach((value, key) => {
         res.setHeader(key, value);
@@ -62,7 +62,7 @@ export function createExpressAdapter(
           request.url || "",
           `http://${request.headers.host}`,
         );
-        const matched = axiom.router.match(
+        const matched = Axeom.router.match(
           request.method || "GET",
           url.pathname,
         );
@@ -71,7 +71,7 @@ export function createExpressAdapter(
           wss.handleUpgrade(request, socket, head, (ws: any) => {
             const handlers = matched.route.metadata?.ws;
 
-            // Map standard WS events to Axiom handlers
+            // Map standard WS events to Axeom handlers
             handlers.open?.(ws);
             ws.on("message", (data: any) => handlers.message?.(ws, data));
             ws.on("close", (code: number, reason: Buffer) =>

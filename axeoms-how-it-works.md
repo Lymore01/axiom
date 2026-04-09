@@ -1,16 +1,16 @@
-# Axiom Technical Deep Dive: The Architecture of Zero-Code-Gen Type Safety
+# Axeom Technical Deep Dive: The Architecture of Zero-Code-Gen Type Safety
 
-This document provides a comprehensive, line-by-line explanation of the mechanics behind the Axiom framework. We will trace the lifecycle of a route from its definition on the server to its typed invocation on the client.
+This document provides a comprehensive, line-by-line explanation of the mechanics behind the Axeom framework. We will trace the lifecycle of a route from its definition on the server to its typed invocation on the client.
 
 ---
 
 ## 1. Server-Side: The "Registry" Builder
 
-At its heart, Axiom is a **Type-Safe Builder**. Most web frameworks store routes in an array at runtime. Axiom does that *plus* stores them in a **TypeScript Interface** at compile-time.
+At its heart, Axeom is a **Type-Safe Builder**. Most web frameworks store routes in an array at runtime. Axeom does that *plus* stores them in a **TypeScript Interface** at compile-time.
 
 ### The Class Signature
 ```typescript
-export class Axiom<
+export class Axeom<
   T extends Record<string, any> = {}, // The Registry
   D extends Record<string, any> = { logger: Logger }, // The Dependencies
 > { ... }
@@ -19,13 +19,13 @@ export class Axiom<
 - `D` is the **Context**. It contains anything you've added via `.decorate()` or `.derive()`.
 
 ### The `.get()` / `.post()` Methods
-When you define a route, you aren't just adding a handler; you are **transforming the type of the Axiom instance**:
+When you define a route, you aren't just adding a handler; you are **transforming the type of the Axeom instance**:
 
 ```typescript
 private addRoute<Method, Path, S, Return>(...) {
   // ... runtime registration logic ...
 
-  return this as unknown as Axiom<
+  return this as unknown as Axeom<
     T & { [K in `${Method} ${Path}`]: RouteMetadata<Path, S, Return> },
     D
   >;
@@ -33,16 +33,16 @@ private addRoute<Method, Path, S, Return>(...) {
 ```
 - Notice the **Intersection (`&`)**: We take the existing registry `T` and merge it with a new object containing exactly one key.
 - The key is a **Template Literal Type**: `` `${Method} ${Path}` ``. If you call `.get("/posts")`, the key becomes `"GET /posts"`.
-- Because each method returns `this` cast to the new type, you can chain 100 methods, and the final `axiom` instance will have a type containing all 100 entries.
+- Because each method returns `this` cast to the new type, you can chain 100 methods, and the final `Axeom` instance will have a type containing all 100 entries.
 
 ---
 
 ## 2. Advanced Type Orchestration: `RouteMetadata` and `RouteInput`
 
-Axiom doesn't just store "any" data; it computes the **Request Contract** automatically.
+Axeom doesn't just store "any" data; it computes the **Request Contract** automatically.
 
 ### Path Parameter Extraction (`ExtractParams`)
-How does Axiom know that `/users/:id/:profile` requires two string parameters? It uses a **Recursive Template Literal Type**:
+How does Axeom know that `/users/:id/:profile` requires two string parameters? It uses a **Recursive Template Literal Type**:
 
 ```typescript
 export type ExtractParams<T> = T extends `${string}/:${infer P}/${infer Rest}`
@@ -70,7 +70,7 @@ export type RouteInput<Path, S> = Prettify<
 
 ## 3. Modularity: The `PrefixT` Engine
 
-When you use `.group("/api", (group) => ...)`, Axiom has to "shift" every route in that group. It uses the `PrefixT` utility:
+When you use `.group("/api", (group) => ...)`, Axeom has to "shift" every route in that group. It uses the `PrefixT` utility:
 
 ```typescript
 export type PrefixT<Prefix, T> = {
@@ -87,15 +87,15 @@ export type PrefixT<Prefix, T> = {
 
 ## 4. Client-Side: Recursive Path Traversal
 
-Creating the client is where the most complex TypeScript magic happens. `AxiomClient<T>` is a "Double-Recursive" type.
+Creating the client is where the most complex TypeScript magic happens. `AxeomClient<T>` is a "Double-Recursive" type.
 
 ### The Path Building Logic
 The client type must split a flat key like `"GET /users/posts/list"` into a nested object: `client.users.posts.list.get()`.
 
 ```typescript
-export type AxiomClient<T> = {
+export type AxeomClient<T> = {
   // 1. NESTING: Look for paths with multiple segments (slashes)
-  [K in keyof T as K extends `${string} /${infer Segment}/${string}` ? Segment : never]: AxiomClient<{
+  [K in keyof T as K extends `${string} /${infer Segment}/${string}` ? Segment : never]: AxeomClient<{
     // Pass only the routes that match this segment to the next level
     [P in keyof T as P extends `${infer Method} /${K extends `${string} /${infer S}/${string}` ? S : never}/${infer Rest}` ? `${Method} /${Rest}` : never]: T[P];
   }>;
@@ -110,7 +110,7 @@ export type AxiomClient<T> = {
     };
 };
 ```
-- **Part 1 (Nesting)**: `K extends `${string} /${infer Segment}/${string}`` checks if there's a slash *after* the initial segment. If there is, it creates a property for that `Segment` and recursively calls `AxiomClient`.
+- **Part 1 (Nesting)**: `K extends `${string} /${infer Segment}/${string}`` checks if there's a slash *after* the initial segment. If there is, it creates a property for that `Segment` and recursively calls `AxeomClient`.
 - **Part 2 (Execution)**: `Path extends `${string}/${string}` ? never : Path` checks if this is the *last* segment. If it is, it generates the HTTP method methods (`get()`, `post()`, etc.).
 - **Variadic Tooling**: `...args: {} extends T[M]["input"] ? [options?: T[M]["input"]] : [options: T[M]["input"]]` detects if the input object is "empty" (all properties optional). If it is, the client call `client.posts.get()` becomes valid with 0 arguments.
 
@@ -121,7 +121,7 @@ export type AxiomClient<T> = {
 Because we don't want to generate any code, we use a **Nested Proxy** to handle infinite property chains.
 
 ```typescript
-export function createAxiomClient(baseUrl) {
+export function createAxeomClient(baseUrl) {
   const createProxy = (pathParts: string[]) => {
     return new Proxy(() => {}, {
       get(_, prop) {
@@ -152,7 +152,7 @@ export function createAxiomClient(baseUrl) {
 ## 6. The "Single Source of Truth" Lifecycle (Example)
 
 1. **Step 1 (Server)**: You write `.get("/users/:id", (ctx) => { return { name: "John" } })`.
-   - Axiom Registry now has: `{"GET /users/:id": { input: { params: {id: string}, ...}, output: {name: string} } }`.
+   - Axeom Registry now has: `{"GET /users/:id": { input: { params: {id: string}, ...}, output: {name: string} } }`.
 2. **Step 2 (Export)**: Typescript exports this massive object type.
 3. **Step 3 (Client)**: You type `client.users[":id"].get({ params: { id: "1" } })`.
    - **Autocomplete**: TS sees `users` as a segment in the registry.
@@ -166,23 +166,23 @@ export function createAxiomClient(baseUrl) {
 
 ## 7. Key Concepts for Further Research
 
-If you want to master the "magic" behind Axiom and similar modern frameworks, research these core concepts:
+If you want to master the "magic" behind Axeom and similar modern frameworks, research these core concepts:
 
 ### TypeScript "Type-Level Programming"
-- **Template Literal Types**: How Axiom turns a string like `"/users/:id"` into a TypeScript key.
-- **Recursive Types**: Used in the `AxiomClient` to drill down into path segments.
-- **Key Remapping (`as`)**: How Axiom iterates over your registry and "renames" keys (e.g., stripping the `"GET "` to create the `.get()` method).
+- **Template Literal Types**: How Axeom turns a string like `"/users/:id"` into a TypeScript key.
+- **Recursive Types**: Used in the `AxeomClient` to drill down into path segments.
+- **Key Remapping (`as`)**: How Axeom iterates over your registry and "renames" keys (e.g., stripping the `"GET "` to create the `.get()` method).
 - **Conditional Types and `infer`**: How we extract variables from strings (e.g., `T extends "/:${infer P}" ? P : never`).
-- **Intersection Types (`&`)**: Why we use this in the Axiom builder to "append" routes to the instance type.
+- **Intersection Types (`&`)**: Why we use this in the Axeom builder to "append" routes to the instance type.
 
 ### JavaScript Runtime Meta-Programming
 - **JavaScript `Proxy` Object**: The core of the client. Specifically the **`get` trap** (intercepting property access) and the **`apply` trap** (intercepting function calls).
-- **Higher-Order Functions and Closures**: How Axiom "remembers" the path parts as you navigate `client.a.b.c`.
+- **Higher-Order Functions and Closures**: How Axeom "remembers" the path parts as you navigate `client.a.b.c`.
 - **The "Trap" Pattern**: Intercepting calls and routing them to a single handler (like our fetcher).
 
 ### Modern API Design Patterns
-- **Zero-Code-Gen Architecture**: Contrast this with "Code Generation" (like GraphQL Codegen or OpenAPI). Axiom belongs to the new world where the **type is the source of truth**, not a generated file.
+- **Zero-Code-Gen Architecture**: Contrast this with "Code Generation" (like GraphQL Codegen or OpenAPI). Axeom belongs to the new world where the **type is the source of truth**, not a generated file.
 - **Fluent API / Method Chaining**: Designing classes where methods return a modified version of `this` to allow for `app.get().post().use()`.
-- **The Adapter Pattern**: How Axiom separates "Core" logic from runtime-specific code (Node/Express, Bun, Cloudflare).
+- **The Adapter Pattern**: How Axeom separates "Core" logic from runtime-specific code (Node/Express, Bun, Cloudflare).
 - **Schema-First Type Inference**: Research how **Zod** allows you to write a runtime schema and automatically extract a TypeScript type from it via `z.infer`.
 - **End-to-End (E2E) Type Safety**: The general concept of sharing types between the server and client without bridges or separate schema files.

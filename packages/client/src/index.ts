@@ -1,4 +1,4 @@
-import type { Axiom } from "@axiom/core";
+import type { Axeom } from "@axeom/core";
 
 type MethodName<M extends string> = M extends "GET"
   ? "get"
@@ -15,11 +15,11 @@ type MethodName<M extends string> = M extends "GET"
 /**
  * Maps the server registry to a client structure segment-by-segment.
  */
-export type AxiomClient<T extends Record<string, any>> = {
+export type AxeomClient<T extends Record<string, any>> = {
   // Path building (e.g., client.users)
   [K in keyof T as K extends `${string} /${infer Segment}/${string}`
     ? Segment
-    : never]: AxiomClient<{
+    : never]: AxeomClient<{
     [P in keyof T as P extends `${infer Method} /${K extends `${string} /${infer S}/${string}` ? S : never}/${infer Rest}`
       ? `${Method} /${Rest}`
       : never]: T[P];
@@ -41,16 +41,16 @@ export type AxiomClient<T extends Record<string, any>> = {
   };
 };
 
-export type InferRegistry<A> = A extends Axiom<infer T, any> ? T : never;
+export type InferRegistry<A> = A extends Axeom<infer T, any> ? T : never;
 
 /**
- * Creates a type-safe client for the given Axiom app's registry.
- * It can accept either the Axiom instance type or the registry type itself.
+ * Creates a type-safe client for the given Axeom app's registry.
+ * It can accept either the Axeom instance type or the registry type itself.
  * Works at runtime
  */
-export function createAxiomClient<T extends Record<string, any>>(
+export function createAxeomClient<T extends Record<string, any>>(
   baseUrl: string = "/",
-): AxiomClient<T extends Axiom<infer R, any> ? R : T> {
+): AxeomClient<T extends Axeom<infer R, any> ? R : T> {
   const createProxy = (pathParts: string[] = []): any => {
     return new Proxy(() => {}, {
       get(_, prop: string) {

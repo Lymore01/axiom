@@ -1,20 +1,20 @@
-import type Axiom from "@axiom/core";
+import type Axeom from "@axeom/core";
 
 export interface WebAdapterOptions {
   /**
-   * The base path where the Axiom router is mounted.
+   * The base path where the Axeom router is mounted.
    * If provided, this prefix will be stripped from the URL before matching.
-   * @example "/api/axiom"
+   * @example "/api/Axeom"
    */
   basePath?: string;
 }
 
 /**
- * Creates a standard Web (Fetch API) compatible handler for Axiom.
+ * Creates a standard Web (Fetch API) compatible handler for Axeom.
  * This works natively with Next.js, SvelteKit, Astro, SolidStart, and more.
  */
 export function createWebHandler(
-  axiom: Axiom<any, any>,
+  Axeom: Axeom<any, any>,
   options: WebAdapterOptions = {},
 ) {
   const handler = async (req: Request) => {
@@ -30,7 +30,7 @@ export function createWebHandler(
       }
     }
 
-    return axiom.handle(requestToHandle);
+    return Axeom.handle(requestToHandle);
   };
 
   return {

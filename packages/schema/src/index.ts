@@ -1,5 +1,5 @@
 /**
- * Axiom Schema
+ * Axeom Schema
  * A zero-dependency, ultra-lightweight validation library.
  */
 
@@ -8,7 +8,7 @@ type ValidationResult<T> =
   | { success: false; error: string };
 
 /**
- * Standard Validator interface for Axiom.
+ * Standard Validator interface for Axeom.
  */
 export interface Validator<T = any> {
   readonly _output: T;
@@ -16,14 +16,14 @@ export interface Validator<T = any> {
 }
 
 /**
- * Infer the type of an Axiom Schema.
+ * Infer the type of an Axeom Schema.
  */
 export type Infer<S> = S extends Validator<infer T> ? T : never;
 
 /**
  * Base Schema class providing chainable modifiers for all schema types.
  */
-export abstract class AxiomSchema<T> implements Validator<T> {
+export abstract class AxeomSchema<T> implements Validator<T> {
   readonly _output!: T;
   protected _isOptional = false;
   protected _isNullable = false;
@@ -69,7 +69,7 @@ export abstract class AxiomSchema<T> implements Validator<T> {
   /**
    * Marks the field as optional, allowing 'undefined' inputs.
    */
-  optional(): this & AxiomSchema<T | undefined> {
+  optional(): this & AxeomSchema<T | undefined> {
     this._isOptional = true;
     return this as any;
   }
@@ -77,7 +77,7 @@ export abstract class AxiomSchema<T> implements Validator<T> {
   /**
    * Marks the field as nullable, allowing 'null' inputs.
    */
-  nullable(): this & AxiomSchema<T | null> {
+  nullable(): this & AxeomSchema<T | null> {
     this._isNullable = true;
     return this as any;
   }
@@ -93,7 +93,7 @@ export abstract class AxiomSchema<T> implements Validator<T> {
   /**
    * Transforms the validated output into a new value or type.
    */
-  transform<U>(fn: (data: T) => U | Promise<U>): AxiomSchema<U> & this {
+  transform<U>(fn: (data: T) => U | Promise<U>): AxeomSchema<U> & this {
     this._transforms.push(fn);
     return this as any;
   }
@@ -115,7 +115,7 @@ export abstract class AxiomSchema<T> implements Validator<T> {
 /**
  * String Schema
  */
-class StringSchema extends AxiomSchema<string> {
+class StringSchema extends AxeomSchema<string> {
   protected _validate(data: unknown): ValidationResult<string> {
     return typeof data === "string"
       ? { success: true, data }
@@ -192,7 +192,7 @@ class StringSchema extends AxiomSchema<string> {
 /**
  * Number Schema
  */
-class NumberSchema extends AxiomSchema<number> {
+class NumberSchema extends AxeomSchema<number> {
   protected _validate(data: unknown): ValidationResult<number> {
     return typeof data === "number"
       ? { success: true, data }
@@ -237,7 +237,7 @@ class NumberSchema extends AxiomSchema<number> {
 /**
  * Boolean Schema
  */
-class BooleanSchema extends AxiomSchema<boolean> {
+class BooleanSchema extends AxeomSchema<boolean> {
   protected _validate(data: unknown): ValidationResult<boolean> {
     return typeof data === "boolean"
       ? { success: true, data }
@@ -259,7 +259,7 @@ class BooleanSchema extends AxiomSchema<boolean> {
 /**
  * Any Schema
  */
-class AnySchema extends AxiomSchema<any> {
+class AnySchema extends AxeomSchema<any> {
   protected _validate(data: unknown): ValidationResult<any> {
     return { success: true, data };
   }
@@ -272,7 +272,7 @@ class AnySchema extends AxiomSchema<any> {
 /**
  * Object Schema - Handles recursive validation of properties
  */
-class ObjectSchema<T extends Record<string, Validator>> extends AxiomSchema<{
+class ObjectSchema<T extends Record<string, Validator>> extends AxeomSchema<{
   [K in keyof T]: T[K]["_output"];
 }> {
   constructor(private shape: T) {
@@ -323,7 +323,7 @@ class ObjectSchema<T extends Record<string, Validator>> extends AxiomSchema<{
 /**
  * Array Schema - Handles recursive validation of items
  */
-class ArraySchema<T extends Validator> extends AxiomSchema<T["_output"][]> {
+class ArraySchema<T extends Validator> extends AxeomSchema<T["_output"][]> {
   constructor(private itemSchema: T) {
     super();
   }
@@ -371,7 +371,7 @@ class ArraySchema<T extends Validator> extends AxiomSchema<T["_output"][]> {
 /**
  * File Schema - Validates that the input is a standard File or Blob.
  */
-class FileSchema extends AxiomSchema<File> {
+class FileSchema extends AxeomSchema<File> {
   protected _validate(data: unknown): ValidationResult<File> {
     return data instanceof File || data instanceof Blob
       ? { success: true, data: data as File }

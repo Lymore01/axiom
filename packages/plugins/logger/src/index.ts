@@ -1,5 +1,5 @@
-import type Axiom from "@axiom/core";
-import { createPinoLogger, type Logger } from "@axiom/logger";
+import type Axeom from "@axeom/core";
+import { createPinoLogger, type Logger } from "@axeom/logger";
 
 export const loggerPlugin = <
   T extends Record<string, any>,
@@ -7,7 +7,7 @@ export const loggerPlugin = <
 >(
   customLogger?: Logger,
 ) => {
-  return (app: Axiom<T, D>) => {
+  return (app: Axeom<T, D>) => {
     const logger = customLogger || createPinoLogger();
     return app.decorate({ logger });
   };

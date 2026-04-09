@@ -1,4 +1,4 @@
-import type { Axiom } from "@axiom/core";
+import type { Axeom } from "@axeom/core";
 
 export interface CompressionOptions {
   /**
@@ -9,7 +9,7 @@ export interface CompressionOptions {
 }
 
 /**
- * Axiom Compression Plugin.
+ * Axeom Compression Plugin.
  * Automatically compresses large responses using gzip or deflate based on the 'Accept-Encoding' header.
  * Uses the standards-compliant CompressionStream API.
  */
@@ -17,7 +17,7 @@ export const compression = (options: CompressionOptions = {}) => {
   const threshold = options.threshold ?? 1024;
 
   return <T extends Record<string, any>, D extends Record<string, any>>(
-    app: Axiom<T, D>,
+    app: Axeom<T, D>,
   ) => {
     return app.onResponse(async (res: Response, ctx) => {
       if (
@@ -31,11 +31,11 @@ export const compression = (options: CompressionOptions = {}) => {
       const contentLength = res.headers.get("Content-Length");
       if (contentLength && parseInt(contentLength) < threshold) {
         // console.log(
-        //   "[Axiom Compression] Skipping compression for small response",
+        //   "[Axeom Compression] Skipping compression for small response",
         // );
         return res;
       }
-      // console.log("[Axiom Compression] Compressing response");
+      // console.log("[Axeom Compression] Compressing response");
 
       // negotiate encoding
       const acceptEncoding = ctx.headers.get("Accept-Encoding") || "";
@@ -67,7 +67,7 @@ export const compression = (options: CompressionOptions = {}) => {
         return newRes;
       } catch (err) {
         // Fallback to original response if compression fails
-        console.warn("[Axiom Compression] Failed to stream compression:", err);
+        console.warn("[Axeom Compression] Failed to stream compression:", err);
         return res;
       }
     });

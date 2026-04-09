@@ -1,4 +1,4 @@
-import { ForbiddenError, type Axiom } from "@axiom/core";
+import { ForbiddenError, type Axeom } from "@axeom/core";
 
 export type CorsOptions = {
   origin?: string | string[] | ((origin: string) => string | boolean);
@@ -45,7 +45,7 @@ export const cors = (options: CorsOptions = {}) => {
   };
 
   return <T extends Record<string, any>, D extends Record<string, any>>(
-    app: Axiom<T, D>,
+    app: Axeom<T, D>,
   ) => {
     return app
       .onBeforeMatch((req) => {

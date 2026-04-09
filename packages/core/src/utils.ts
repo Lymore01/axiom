@@ -1,4 +1,4 @@
-export interface AxiomValidationError {
+export interface AxeomValidationError {
   path: (string | number)[];
   message: string;
   code: string;
@@ -27,7 +27,7 @@ export function createRegex(path: string, paramNames: string[] = []) {
 /**
  * Standardizes schema validation errors into a consistent structure for API responses.
  */
-export function formatValidationError(error: any): AxiomValidationError[] {
+export function formatValidationError(error: any): AxeomValidationError[] {
   const issues = error.issues || [];
 
   if (Array.isArray(issues) && issues.length > 0) {

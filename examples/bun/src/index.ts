@@ -1,8 +1,8 @@
-import { authRoutes } from "@axiom/auth";
-import Axiom from "@axiom/core";
-import { s } from "@axiom/schema";
+import { authRoutes } from "@axeom/auth";
+import Axeom from "@axeom/core";
+import { s } from "@axeom/schema";
 
-const axiom = new Axiom()
+const Axeom = new Axeom()
   .decorate({
     db: { query: (sql: string) => `Result from Bun DB for ${sql}` },
     log: (msg: string) => console.log(`[BUN LOG]: ${msg}`),
@@ -16,7 +16,7 @@ const axiom = new Axiom()
   .onRequest((ctx) => {
     console.log(`[BUN]: Request to ${ctx.request.url}`);
   })
-  .get("/whoami", ({ user }: any) => `Axiom on Bun: Hello ${user}`)
+  .get("/whoami", ({ user }: any) => `Axeom on Bun: Hello ${user}`)
   .get("/posts", () => {
     return {
       message: "This is running natively on Bun!",
@@ -40,11 +40,11 @@ const axiom = new Axiom()
     },
   );
 
-console.log("Axiom is live (Bun Native) at http://localhost:3001");
+console.log("Axeom is live (Bun Native) at http://localhost:3001");
 
 export default {
   port: 3001,
   async fetch(req: Request) {
-    return axiom.handle(req);
+    return Axeom.handle(req);
   },
 };

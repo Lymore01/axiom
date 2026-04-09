@@ -1,5 +1,5 @@
 {
-  "name": "axiom",
+  "name": "axeom",
   "version": "1.0.0",
   "type": "module",
   "description": "The weightless framework for heavy performance",
@@ -14,31 +14,31 @@
     "./ws": "./src/plugins/ws.ts"
   },
   "dependencies": {
-    "@axiom/core": "workspace:*",
-    "@axiom/schema": "workspace:*",
-    "@axiom/logger": "workspace:*"
+    "@axeom/core": "workspace:*",
+    "@axeom/schema": "workspace:*",
+    "@axeom/logger": "workspace:*"
   },
   "peerDependencies": {
-    "@axiom/web": "workspace:*",
-    "@axiom/adapter-express": "workspace:*",
-    "@axiom/client": "workspace:*",
-    "@axiom/swagger": "workspace:*",
-    "@axiom/ws": "workspace:*"
+    "@axeom/web": "workspace:*",
+    "@axeom/express": "workspace:*",
+    "@axeom/client": "workspace:*",
+    "@axeom/swagger": "workspace:*",
+    "@axeom/ws": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@axiom/web": {
+    "@axeom/web": {
       "optional": true
     },
-    "@axiom/adapter-express": {
+    "@axeom/express": {
       "optional": true
     },
-    "@axiom/client": {
+    "@axeom/client": {
       "optional": true
     },
-    "@axiom/swagger": {
+    "@axeom/swagger": {
       "optional": true
     },
-    "@axiom/ws": {
+    "@axeom/ws": {
       "optional": true
     }
   }

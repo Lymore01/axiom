@@ -1,19 +1,19 @@
-import { authPlugin, authRoutes } from "@axiom/auth";
-import { compression } from "@axiom/compression";
-import Axiom from "@axiom/core";
-import { cors } from "@axiom/cors";
-import { createExpressAdapter } from "@axiom/express";
-import { rateLimit } from "@axiom/rate-limit";
-import { s } from "@axiom/schema";
-import { securityHeaders } from "@axiom/security";
-import { staticPlugin } from "@axiom/static";
-import { swagger } from "@axiom/swagger";
-import uploadPlugin from "@axiom/upload";
-import { wsPlugin } from "@axiom/ws";
+import { authPlugin, authRoutes } from "@axeom/auth";
+import { compression } from "@axeom/compression";
+import Axeom from "@axeom/core";
+import { cors } from "@axeom/cors";
+import { createExpressAdapter } from "@axeom/express";
+import { rateLimit } from "@axeom/rate-limit";
+import { s } from "@axeom/schema";
+import { securityHeaders } from "@axeom/security";
+import { staticPlugin } from "@axeom/static";
+import { swagger } from "@axeom/swagger";
+import uploadPlugin from "@axeom/upload";
+import { wsPlugin } from "@axeom/ws";
 
-export const axiom = new Axiom()
+export const Axeom = new Axeom()
   .use(wsPlugin())
-  .use(swagger({ info: { title: "Axiom Node/Express API" } }))
+  .use(swagger({ info: { title: "Axeom Node/Express API" } }))
   .use(authPlugin({ secret: "DEVELOPMENT_SECRET_KEY" }))
   .use(uploadPlugin({ dest: "./uploads" }))
   .use(compression({ threshold: 1024 }))
@@ -34,7 +34,7 @@ export const axiom = new Axiom()
   .ws("/chat", {
     open(ws) {
       console.log("\x1b[36m[Node WS]\x1b[0m Client connected!");
-      ws.send("Welcome to Axiom WebSocket (Node/Express)!");
+      ws.send("Welcome to Axeom WebSocket (Node/Express)!");
     },
     message(ws, msg) {
       console.log(`\x1b[36m[Node WS]\x1b[0m Received: ${msg}`);
@@ -95,8 +95,8 @@ export const axiom = new Axiom()
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   });
-const server = createExpressAdapter(axiom);
+const server = createExpressAdapter(Axeom);
 
 server.listen(3000, () => {
-  console.log("Axiom is live (Node/Express) at http://localhost:3000");
+  console.log("Axeom is live (Node/Express) at http://localhost:3000");
 });

@@ -1,13 +1,13 @@
-import Axiom, { $START_TIME } from "@axiom/core";
-import s from "@axiom/schema";
-import { swagger } from "@axiom/swagger";
-import uploadPlugin from "@axiom/upload";
-import wsPlugin from "@axiom/ws";
+import Axeom, { $START_TIME } from "@axeom/core";
+import s from "@axeom/schema";
+import { swagger } from "@axeom/swagger";
+import uploadPlugin from "@axeom/upload";
+import wsPlugin from "@axeom/ws";
 
-new Axiom()
+new Axeom()
   .use(uploadPlugin({ dest: "./uploads" }))
   .use(wsPlugin())
-  .use(swagger({ info: { title: "Axiom Bun Native API" } }))
+  .use(swagger({ info: { title: "Axeom Bun Native API" } }))
   .derive(() => ({
     [$START_TIME]: performance.now(),
   }))
@@ -25,7 +25,7 @@ new Axiom()
   .ws("/chat", {
     open(ws) {
       console.log("\x1b[36m[WS]\x1b[0m Client connected!");
-      ws.send("Welcome to Axiom WebSocket!");
+      ws.send("Welcome to Axeom WebSocket!");
     },
     message(ws, msg) {
       console.log(`\x1b[36m[WS]\x1b[0m Received: ${msg}`);
@@ -37,7 +37,7 @@ new Axiom()
   })
   .get("/", (ctx) => {
     return {
-      message: "Hello from Axiom running on Bun!",
+      message: "Hello from Axeom running on Bun!",
       runtime: ctx.runtime,
       status: "online",
     };

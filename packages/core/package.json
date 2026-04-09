@@ -1,5 +1,5 @@
 {
-  "name": "@axiom/core",
+  "name": "@axeom/core",
   "version": "1.0.0",
   "type": "module",
   "main": "src/index.ts",
@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@axiom/logger": "workspace:*",
+    "@axeom/logger": "workspace:*",
     "pino": "^10.3.1"
   }
 }

@@ -1,5 +1,5 @@
-import { createPinoLogger, type Logger } from "@axiom/logger";
-import { AxiomError } from "./errors";
+import { createPinoLogger, type Logger } from "@axeom/logger";
+import { AxeomError } from "./errors";
 import { Hooks } from "./hooks";
 import { Router } from "./router";
 import type {
@@ -17,24 +17,24 @@ export * from "./types";
 /**
  * Internal symbol used to track the start time of a request.
  */
-export const $START_TIME = Symbol("axiom:startTime");
+export const $START_TIME = Symbol("Axeom:startTime");
 
 /**
  * Internal symbol used to store the server instance in the context.
  */
-export const $SERVER = Symbol("axiom:server");
+export const $SERVER = Symbol("Axeom:server");
 
 /**
- * The primary engine of the Axiom framework.
+ * The primary engine of the Axeom framework.
  *
- * Axiom is a WinterTC-compliant, type-safe web framework designed for high-performance
+ * Axeom is a WinterTC-compliant, type-safe web framework designed for high-performance
  * and modularity. It supports automatic runtime detection (Bun, Deno, Node) and
  * provides a powerful plugin system.
  *
  * @template T - A record of route strings to their respective metadata, used for type-safe client generation.
  * @template D - A record of objects and utilities available on the request context (decorators).
  */
-export class Axiom<
+export class Axeom<
   T extends Record<string, any> = {},
   D extends Record<string, any> = { logger: Logger },
 > {
@@ -47,7 +47,7 @@ export class Axiom<
   private errorHandler: (error: any, ctx: Context<any, any, D>) => any = (
     error,
   ) => {
-    if (error instanceof AxiomError) {
+    if (error instanceof AxeomError) {
       return {
         status: "error",
         code: error.code,
@@ -70,22 +70,22 @@ export class Axiom<
     fn: (
       ctx: Context<any, any, D>,
     ) => NewD | Response | Promise<NewD | Response>,
-  ): Axiom<T, D & Exclude<NewD, Response>> {
+  ): Axeom<T, D & Exclude<NewD, Response>> {
     this.derives.push(fn);
-    return this as unknown as Axiom<T, D & Exclude<NewD, Response>>;
+    return this as unknown as Axeom<T, D & Exclude<NewD, Response>>;
   }
 
   /**
    * Registers a plugin.
-   * Plugins are functions that receive the Axiom instance and can register routes,
+   * Plugins are functions that receive the Axeom instance and can register routes,
    * hooks, or decorators.
    *
    * @param plugin - The plugin function to execute.
    */
   use<NewT extends Record<string, any>, NewD extends Record<string, any>>(
-    plugin: (app: Axiom<T, D>) => Axiom<NewT, NewD>,
-  ): Axiom<T & NewT, NewD> {
-    return plugin(this) as unknown as Axiom<T & NewT, NewD>;
+    plugin: (app: Axeom<T, D>) => Axeom<NewT, NewD>,
+  ): Axeom<T & NewT, NewD> {
+    return plugin(this) as unknown as Axeom<T & NewT, NewD>;
   }
 
   /**
@@ -101,9 +101,9 @@ export class Axiom<
     NewD extends Record<string, any>,
   >(
     prefix: Prefix,
-    run: (app: Axiom<T, D>) => Axiom<NewT, NewD>,
-  ): Axiom<T & PrefixT<Prefix, NewT>, NewD> {
-    const branch = new Axiom<T, D>();
+    run: (app: Axeom<T, D>) => Axeom<NewT, NewD>,
+  ): Axeom<T & PrefixT<Prefix, NewT>, NewD> {
+    const branch = new Axeom<T, D>();
 
     // Inherit from parent
     branch.derives = [...this.derives];
@@ -133,9 +133,9 @@ export class Axiom<
    *
    * @param obj - An object containing properties to add to the context.
    */
-  decorate<NewD extends Record<string, any>>(obj: NewD): Axiom<T, D & NewD> {
+  decorate<NewD extends Record<string, any>>(obj: NewD): Axeom<T, D & NewD> {
     this.decorators = { ...this.decorators, ...obj };
-    return this as Axiom<T, D & NewD>;
+    return this as Axeom<T, D & NewD>;
   }
 
   protected addRoute<
@@ -163,7 +163,7 @@ export class Axiom<
       metadata,
     );
 
-    return this as unknown as Axiom<
+    return this as unknown as Axeom<
       T & { [K in `${Method} ${Path}`]: RouteMetadata<Path, S, Return> },
       D
     >;
@@ -473,7 +473,7 @@ export class Axiom<
   /**
    * Automatically detect the runtime and start a server.
    * Currently supports: Bun, Deno.
-   * For Node, use a specific adapter like @axiom/adapter-express.
+   * For Node, use a specific adapter like @axeom/express.
    *
    * @param portOrOptions - The port number or a server options object.
    */
@@ -513,7 +513,7 @@ export class Axiom<
         },
       });
 
-      console.log(`\x1b[32m Axiom listening on ${this.server.url}\x1b[0m`);
+      console.log(`\x1b[32m Axeom listening on ${this.server.url}\x1b[0m`);
       return this.server;
     }
 
@@ -543,17 +543,17 @@ export class Axiom<
 
     if (typeof process !== "undefined" && process.release?.name === "node") {
       throw new Error(
-        "[Axiom] Automatic runtime detection found Node.js. " +
-          "Axiom requires a Fetch API compatible server. " +
-          "Please use @axiom/adapter-express for Node.js environments.",
+        "[Axeom] Automatic runtime detection found Node.js. " +
+          "Axeom requires a Fetch API compatible server. " +
+          "Please use @axeom/express for Node.js environments.",
       );
     }
 
     throw new Error(
-      "[Axiom] Automatic runtime detection failed. " +
+      "[Axeom] Automatic runtime detection failed. " +
         "Ensure you are running in a supported environment (Bun, Deno) or use an adapter.",
     );
   }
 }
 
-export default Axiom;
+export default Axeom;

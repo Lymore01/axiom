@@ -1,5 +1,5 @@
-import type { Axiom, Context } from "@axiom/core";
-import { s } from "@axiom/schema";
+import type { Axeom, Context } from "@axeom/core";
+import { s } from "@axeom/schema";
 import { SignJWT, jwtVerify } from "jose";
 
 export interface AuthOptions {
@@ -15,7 +15,7 @@ export interface User {
 }
 
 /**
- * The Axiom Auth Plugin.
+ * The Axeom Auth Plugin.
  * Adds JWT signing and verification utilities to the context.
  */
 export const authPlugin = (options: AuthOptions) => {
@@ -23,7 +23,7 @@ export const authPlugin = (options: AuthOptions) => {
   const rawSecret = encoder.encode(options.secret);
 
   return <T extends Record<string, any>, D extends Record<string, any>>(
-    app: Axiom<T, D>,
+    app: Axeom<T, D>,
   ) => {
     return app.decorate({
       auth: {
@@ -34,8 +34,8 @@ export const authPlugin = (options: AuthOptions) => {
           return await new SignJWT(payload)
             .setProtectedHeader({ alg: "HS256" })
             .setIssuedAt()
-            .setIssuer(options.issuer || "axiom")
-            .setAudience(options.audience || "axiom-app")
+            .setIssuer(options.issuer || "Axeom")
+            .setAudience(options.audience || "Axeom-app")
             .setExpirationTime(options.expiresIn || "2h")
             .sign(rawSecret);
         },
@@ -45,8 +45,8 @@ export const authPlugin = (options: AuthOptions) => {
         verify: async (token: string): Promise<User | null> => {
           try {
             const { payload } = await jwtVerify(token, rawSecret, {
-              issuer: options.issuer || "axiom",
-              audience: options.audience || "axiom-app",
+              issuer: options.issuer || "Axeom",
+              audience: options.audience || "Axeom-app",
             });
             return payload as unknown as User;
           } catch {
@@ -65,7 +65,7 @@ export const authPlugin = (options: AuthOptions) => {
  * If it fails, it returns a 401 Unauthorized response.
  *
  * Usage:
- * axiom.group("/admin", (admin) => admin.derive(bearerGuard()).get("/dashboard", ({ user }) => ...))
+ * Axeom.group("/admin", (admin) => admin.derive(bearerGuard()).get("/dashboard", ({ user }) => ...))
  */
 export const bearerGuard = () => {
   return async <T extends Record<string, any>, D extends Record<string, any>>(
@@ -119,10 +119,10 @@ export const authRoutes = <
   T extends Record<string, any>,
   D extends Record<string, any>,
 >(
-  app: Axiom<T, D>,
+  app: Axeom<T, D>,
 ) => {
   // We expect the authPlugin to have been used before this
-  const authApp = app as unknown as Axiom<
+  const authApp = app as unknown as Axeom<
     T,
     D & {
       auth: {

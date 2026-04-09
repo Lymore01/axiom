@@ -1,4 +1,4 @@
-import type Axiom from "@axiom/core";
+import type Axeom from "@axeom/core";
 
 export interface BunAdapterOptions {
   port?: number;
@@ -7,20 +7,20 @@ export interface BunAdapterOptions {
 }
 
 /**
- * Creates a high-performance Bun entry point for Axiom.
+ * Creates a high-performance Bun entry point for Axeom.
  *
- * Unlike the Express adapter, this connects Axiom directly to the
+ * Unlike the Express adapter, this connects Axeom directly to the
  * Zig-level HTTP server in Bun, bypassing multiple layers of middleware.
  */
 export function createBunAdapter(
-  axiom: Axiom<any, any>,
+  Axeom: Axeom<any, any>,
   options: BunAdapterOptions = {},
 ) {
   // Check if we are running in Bun
   // @ts-ignore
   if (typeof Bun === "undefined") {
     console.warn(
-      "\x1b[33m[Axiom Warning]\x1b[0m createBunAdapter is designed for the Bun runtime.",
+      "\x1b[33m[Axeom Warning]\x1b[0m createBunAdapter is designed for the Bun runtime.",
     );
   }
 
@@ -30,11 +30,11 @@ export function createBunAdapter(
     development: options.development ?? process.env.NODE_ENV === "development",
 
     fetch: async (request: Request, server: any) => {
-      const response = await axiom.handle(request);
+      const response = await Axeom.handle(request);
 
       if (response.status === 101) {
         const url = new URL(request.url);
-        const matched = axiom.router.match(request.method, url.pathname);
+        const matched = Axeom.router.match(request.method, url.pathname);
 
         if (matched && matched.route.metadata?.ws) {
           const success = server.upgrade(request, {

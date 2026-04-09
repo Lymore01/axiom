@@ -1,4 +1,4 @@
-import type { Axiom } from "@axiom/core";
+import type { Axeom } from "@axeom/core";
 
 export interface UploadOptions {
   dest?: string;
@@ -46,18 +46,18 @@ export async function saveFile(file: File | Blob, path: string) {
   }
 
   throw new Error(
-    "[Axiom Upload] Current runtime is not supported for native file writing.",
+    "[Axeom Upload] Current runtime is not supported for native file writing.",
   );
 }
 
 /**
- * The Axiom Upload Plugin.
+ * The Axeom Upload Plugin.
  * Adds a unified storage utility to the context.
  */
 export const uploadPlugin =
   (options: UploadOptions = {}) =>
   <T extends Record<string, any>, D extends Record<string, any>>(
-    app: Axiom<T, D>,
+    app: Axeom<T, D>,
   ) => {
     return app.decorate({
       storage: {

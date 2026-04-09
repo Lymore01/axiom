@@ -10,20 +10,20 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@axiom/auth": "workspace:*",
-    "@axiom/client": "workspace:*",
-    "@axiom/core": "workspace:*",
-    "@axiom/cors": "workspace:*",
-    "@axiom/express": "workspace:*",
-    "@axiom/logger-plugin": "workspace:*",
-    "@axiom/security": "workspace:*",
-    "@axiom/static": "workspace:*",
-    "@axiom/rate-limit": "workspace:*",
+    "@axeom/auth": "workspace:*",
+    "@axeom/client": "workspace:*",
+    "@axeom/core": "workspace:*",
+    "@axeom/cors": "workspace:*",
+    "@axeom/express": "workspace:*",
+    "@axeom/logger-plugin": "workspace:*",
+    "@axeom/security": "workspace:*",
+    "@axeom/static": "workspace:*",
+    "@axeom/rate-limit": "workspace:*",
     "zod": "^4.3.6",
-    "@axiom/schema": "workspace:*",
-    "@axiom/compression": "workspace:*",
-    "@axiom/ws": "workspace:*",
-    "@axiom/swagger": "workspace:*"
+    "@axeom/schema": "workspace:*",
+    "@axeom/compression": "workspace:*",
+    "@axeom/ws": "workspace:*",
+    "@axeom/swagger": "workspace:*"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

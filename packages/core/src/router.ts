@@ -58,11 +58,11 @@ export class Router<D extends Record<string, any>> {
 
     if (!result) return null;
 
-    // Convert radix params to the format Axiom.handle expects (for now)
-    // or you can refactor Axiom.handle to use the params object directly.
+    // Convert radix params to the format Axeom.handle expects (for now)
+    // or you can refactor Axeom.handle to use the params object directly.
     const { route, params } = result;
 
-    // Axiom.handle expects 'match' to be an array where index 1+ corresponds to paramNames
+    // Axeom.handle expects 'match' to be an array where index 1+ corresponds to paramNames
     const matchArray: string[] = [pathname];
     route.paramNames.forEach((name) => {
       matchArray.push(params[name]);

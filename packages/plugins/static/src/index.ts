@@ -1,4 +1,4 @@
-import type { Axiom } from "@axiom/core";
+import type { Axeom } from "@axeom/core";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize, resolve } from "node:path";
 
@@ -40,7 +40,7 @@ export function staticPlugin(options: StaticOptions) {
   const absRoot = resolve(rootPath);
 
   return <T extends Record<string, any>, D extends Record<string, any>>(
-    app: Axiom<T, D>,
+    app: Axeom<T, D>,
   ) =>
     app.get(`${prefix}/*` as any, async (ctx: any) => {
       try {

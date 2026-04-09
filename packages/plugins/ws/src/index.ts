@@ -1,4 +1,4 @@
-import type { Axiom } from "@axiom/core";
+import type { Axeom } from "@axeom/core";
 
 export interface WSHandlers {
   open?: (ws: any) => void | Promise<void>;
@@ -8,11 +8,11 @@ export interface WSHandlers {
 }
 
 /**
- * Axiom WebSocket Plugin.
- * Adds the .ws() method to the Axiom instance.
+ * Axeom WebSocket Plugin.
+ * Adds the .ws() method to the Axeom instance.
  */
-declare module "@axiom/core" {
-  interface Axiom<T, D> {
+declare module "@axeom/core" {
+  interface Axeom<T, D> {
     /**
      * Registers a WebSocket route.
      * Triggers a '101 Switching Protocols' response and delegates to the runtime's native upgrade handler.
@@ -26,8 +26,8 @@ declare module "@axiom/core" {
 
 export const wsPlugin = () => {
   return <T extends Record<string, any>, D extends Record<string, any>>(
-    app: Axiom<T, D>,
-  ): Axiom<T, D> => {
+    app: Axeom<T, D>,
+  ): Axeom<T, D> => {
     // Augment the instance with the .ws method at runtime
     (app as any).ws = function (path: string, handlers: WSHandlers) {
       // @ts-ignore - access protected addRoute
