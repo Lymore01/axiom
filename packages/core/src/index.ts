@@ -282,17 +282,17 @@ export class Axeom<
         }
       }
 
-      if (route.onRequests && route.onRequests.length > 0) {
-        for (const onRequestFn of route.onRequests) {
-          await onRequestFn(ctx);
-        }
-      }
-
       if (route.derives && route.derives.length > 0) {
         for (const deriveFn of route.derives) {
           const result = await deriveFn(ctx);
           if (result instanceof Response) return result;
           if (result) Object.assign(ctx, result);
+        }
+      }
+
+      if (route.onRequests && route.onRequests.length > 0) {
+        for (const onRequestFn of route.onRequests) {
+          await onRequestFn(ctx);
         }
       }
 
