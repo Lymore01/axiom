@@ -19,7 +19,7 @@
     "dev:deno": "turbo dev --filter deno-example",
     "dev:nextjs": "turbo dev --filter nextjs-example",
     "build": "turbo build",
-    "test": "turbo test",
+    "test": "npx vitest run",
     "lint": "turbo lint",
     "format": "biome format --write .",
     "check": "biome check --write .",
@@ -29,8 +29,10 @@
   "devDependencies": {
     "@biomejs/biome": "^2.4.10",
     "@types/node": "^22.13.10",
+    "@vitest/ui": "^4.1.4",
     "tsx": "^4.21.0",
     "turbo": "^2.9.5",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.4"
   }
 }
