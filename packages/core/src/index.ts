@@ -15,11 +15,6 @@ export * from "./errors";
 export * from "./types";
 
 /**
- * Internal symbol used to track the start time of a request.
- */
-export const $START_TIME = Symbol("Axeom:startTime");
-
-/**
  * Internal symbol used to store the server instance in the context.
  */
 export const $SERVER = Symbol("Axeom:server");
@@ -222,24 +217,39 @@ export class Axeom<
     const url = new URL(incomingRequest.url);
     const { pathname, searchParams } = url;
     const method = incomingRequest.method;
+    const startTime = performance.now();
+
+    // Helper to finalize the response with headers and timing
+    const finalizeResponse = (res: Response, currentCtx?: any) => {
+      const duration = performance.now() - startTime;
+      res.headers.set("Server-Timing", `total;dur=${duration.toFixed(2)}`);
+
+      if (currentCtx && typeof currentCtx.getResponseHeaders === "function") {
+        const ctxHeaders = currentCtx.getResponseHeaders();
+        Object.entries(ctxHeaders).forEach(([name, value]) => {
+          res.headers.set(name, value as string);
+        });
+      }
+      return res;
+    };
 
     if (this.hooks.onBeforeMatch.length > 0) {
       try {
         for (const hook of this.hooks.onBeforeMatch) {
           const result = await hook(incomingRequest);
-          if (result instanceof Response) return result;
+          if (result instanceof Response) return finalizeResponse(result);
         }
       } catch (error: any) {
         const errorResponse = await this.errorHandler(error, {} as any);
-        return Response.json(errorResponse, {
-          status: error?.status || 500,
-        });
+        return finalizeResponse(
+          Response.json(errorResponse, { status: error?.status || 500 }),
+        );
       }
     }
 
     const matched = this.router.match(method, pathname);
     if (!matched) {
-      return new Response("Route not found", { status: 404 });
+      return finalizeResponse(new Response("Route not found", { status: 404 }));
     }
 
     const { route, match } = matched;
@@ -260,6 +270,13 @@ export class Axeom<
       ctx.query = Object.fromEntries(searchParams.entries());
       ctx.headers = incomingRequest.headers;
       ctx.request = incomingRequest;
+
+      // Inject Timing
+      ctx.time = startTime;
+      ctx.setDuration = (label: string) => {
+        return performance.now() - startTime;
+      };
+
       ctx.body = undefined;
       ctx.setResponseHeader = (name: string, value: string) => {
         responseHeaders[name] = value;
@@ -285,7 +302,7 @@ export class Axeom<
       if (route.derives && route.derives.length > 0) {
         for (const deriveFn of route.derives) {
           const result = await deriveFn(ctx);
-          if (result instanceof Response) return result;
+          if (result instanceof Response) return finalizeResponse(result, ctx);
           if (result) Object.assign(ctx, result);
         }
       }
@@ -299,7 +316,8 @@ export class Axeom<
       if (route.beforeHandles && route.beforeHandles.length > 0) {
         for (const hook of route.beforeHandles) {
           const response = await hook(ctx);
-          if (response instanceof Response) return response;
+          if (response instanceof Response)
+            return finalizeResponse(response, ctx);
         }
       }
 
@@ -317,32 +335,28 @@ export class Axeom<
           }
         } catch (e: any) {
           const formattedErrors = formatValidationError(e);
-          return Response.json(
-            {
-              status: "error",
-              code: "VALIDATION_FAILED",
-              errors: formattedErrors,
-            },
-            { status: 400 },
+          return finalizeResponse(
+            Response.json(
+              {
+                code: "VALIDATION_FAILED",
+                message: "Request validation failed",
+                errors: formattedErrors,
+              },
+              { status: 400 },
+            ),
+            ctx,
           );
         }
       }
 
-      const data = await route.handler(ctx);
-      if (data instanceof Response) return data;
+      let response: any;
+      if (route.handler) {
+        response = await route.handler(ctx);
+      }
 
-      const body = JSON.stringify(data);
-      let response = new Response(body, {
-        headers: {
-          "Content-Type": "application/json",
-          "Content-Length": body.length.toString(),
-        },
-      });
-
-      const ctxHeaders = ctx.getResponseHeaders();
-      Object.entries(ctxHeaders).forEach(([name, value]) => {
-        response.headers.set(name, value as string);
-      });
+      if (!(response instanceof Response)) {
+        response = Response.json(response);
+      }
 
       if (route.onResponses && route.onResponses.length > 0) {
         for (const onResponseFn of route.onResponses) {
@@ -354,16 +368,19 @@ export class Axeom<
       if (route.afterHandles && route.afterHandles.length > 0) {
         for (const hook of route.afterHandles) {
           const result = await hook(ctx);
-          if (result instanceof Response) return result;
+          if (result instanceof Response) return finalizeResponse(result, ctx);
         }
       }
 
-      return response;
+      return finalizeResponse(response, ctx);
     } catch (error: any) {
       const errorResponse = await this.errorHandler(error, ctx);
-      return Response.json(errorResponse, {
-        status: error?.status || 500,
-      });
+      return finalizeResponse(
+        Response.json(errorResponse, {
+          status: error?.status || 500,
+        }),
+        ctx,
+      );
     }
   }
 

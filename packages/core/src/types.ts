@@ -100,6 +100,10 @@ export type Context<
     headers: Headers;
     /** The original Web Request object. */
     request: Request;
+    /** The start time of the request in milliseconds. */
+    time: number;
+    /** Marks the duration for a specific label, returning the elapsed time since start. */
+    setDuration: (label: string) => number;
     /** Helper to set a response header. */
     setResponseHeader: (name: string, value: string) => void;
     /** Internal helper to retrieve manual headers. */

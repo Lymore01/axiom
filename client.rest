@@ -1,4 +1,4 @@
-@base_url=http://localhost:3000
+@base_url=http://localhost:3333
 @title=Axeom REST Adapter Example
 
 ###
@@ -104,3 +104,6 @@ Accept-Encoding: gzip
 ### Compression Test (Large - SHOULD compress)
 GET {{base_url}}/large
 Accept-Encoding: gzip
+
+###
+GET {{base_url}}

@@ -1,18 +1,15 @@
 import { swagger } from "@axeom/swagger";
 import uploadPlugin from "@axeom/upload";
 import wsPlugin from "@axeom/ws";
-import Axeom, { $START_TIME, s } from "axeom";
+import Axeom, { s } from "axeom";
 
 new Axeom()
   .use(uploadPlugin({ dest: "./uploads" }))
   .use(wsPlugin())
   .use(swagger({ info: { title: "Axeom Bun Native API" } }))
-  .derive(() => ({
-    [$START_TIME]: performance.now(),
-  }))
-  .onResponse((res, ctx: any) => {
-    const duration = performance.now() - ctx[$START_TIME];
-    res.headers.set("X-Response-Time", `${duration.toFixed(3)}ms`);
+  .onResponse((res, ctx) => {
+    const duration = ctx.setDuration("total");
+    res.headers.set("X-Axeom-Time", `${duration.toFixed(3)}ms`);
     console.log(
       `\x1b[35m[PERF]\x1b[0m ${ctx.request.method} ${new URL(ctx.request.url).pathname} - ${duration.toFixed(3)}ms`,
     );
@@ -34,13 +31,20 @@ new Axeom()
       console.log("\x1b[36m[WS]\x1b[0m Client disconnected.");
     },
   })
-  .get("/", (ctx) => {
-    return {
-      message: "Hello from Axeom running on Bun!",
-      runtime: ctx.runtime,
-      status: "online",
-    };
-  })
+  .get(
+    "/",
+    (ctx) => {
+      return {
+        message: "Hello from Axeom running on Bun!",
+        runtime: ctx.runtime,
+        status: "online",
+      };
+    },
+    {
+      description: "Get server status",
+      tags: ["base", "server"],
+    },
+  )
   .post(
     "/upload",
     async (ctx) => {
