@@ -1,19 +1,13 @@
 import { swagger } from "@axeom/swagger";
 import uploadPlugin from "@axeom/upload";
 import wsPlugin from "@axeom/ws";
-import Axeom, { s } from "axeom";
+import Axeom, { logger, s } from "axeom";
 
 new Axeom()
   .use(uploadPlugin({ dest: "./uploads" }))
   .use(wsPlugin())
+  .use(logger())
   .use(swagger({ info: { title: "Axeom Bun Native API" } }))
-  .onResponse((res, ctx) => {
-    const duration = ctx.setDuration("total");
-    res.headers.set("X-Axeom-Time", `${duration.toFixed(3)}ms`);
-    console.log(
-      `\x1b[35m[PERF]\x1b[0m ${ctx.request.method} ${new URL(ctx.request.url).pathname} - ${duration.toFixed(3)}ms`,
-    );
-  })
   .decorate({
     runtime: "Bun " + Bun.version,
     startedAt: new Date(),

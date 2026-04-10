@@ -8,9 +8,10 @@ import { staticPlugin } from "@axeom/static";
 import { swagger } from "@axeom/swagger";
 import uploadPlugin from "@axeom/upload";
 import { wsPlugin } from "@axeom/ws";
-import Axeom, { s } from "axeom";
+import Axeom, { logger, s } from "axeom";
 
 const axeom = new Axeom()
+  .use(logger())
   .use(wsPlugin())
   .use(swagger({ info: { title: "Axeom Node/Express API" } }))
   .use(authPlugin({ secret: "DEVELOPMENT_SECRET_KEY" }))

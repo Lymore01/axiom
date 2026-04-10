@@ -16,7 +16,7 @@
     "@axeom/core": "workspace:*",
     "@axeom/cors": "workspace:*",
     "@axeom/express": "workspace:*",
-    "@axeom/logger-plugin": "workspace:*",
+    "@axeom/logger": "workspace:*",
     "@axeom/security": "workspace:*",
     "@axeom/static": "workspace:*",
     "@axeom/rate-limit": "workspace:*",

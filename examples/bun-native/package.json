@@ -11,6 +11,7 @@
     "@axeom/ws": "workspace:*",
     "@axeom/swagger": "workspace:*",
     "@axeom/upload": "workspace:*",
+    "@axeom/logger": "workspace:*",
     "zod": "^3.23.8"
   },
   "devDependencies": {

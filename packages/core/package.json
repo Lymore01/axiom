@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@axeom/logger": "workspace:*",
+    "@axeom/logger-lib": "workspace:*",
     "pino": "^10.3.1"
   }
 }

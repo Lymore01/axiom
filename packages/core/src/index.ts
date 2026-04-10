@@ -1,4 +1,4 @@
-import { createPinoLogger, type Logger } from "@axeom/logger";
+import { createPinoLogger, type Logger } from "@axeom/logger-lib";
 import { AxeomError } from "./errors";
 import { Hooks } from "./hooks";
 import { Router } from "./router";

@@ -16,7 +16,7 @@
   "dependencies": {
     "@axeom/core": "workspace:*",
     "@axeom/schema": "workspace:*",
-    "@axeom/logger": "workspace:*"
+    "@axeom/logger-lib": "workspace:*"
   },
   "peerDependencies": {
     "@axeom/web": "workspace:*",

@@ -1,11 +1,11 @@
 {
-  "name": "@axeom/logger-plugin",
+  "name": "@axeom/logger",
   "version": "1.0.0",
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "dependencies": {
     "@axeom/core": "workspace:*",
-    "@axeom/logger": "workspace:*"
+    "@axeom/logger-lib": "workspace:*"
   }
 }

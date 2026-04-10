@@ -1,5 +1,5 @@
 {
-  "name": "@axeom/logger",
+  "name": "@axeom/logger-lib",
   "version": "1.0.0",
   "type": "module",
   "main": "src/index.ts",
