@@ -1,0 +1,77 @@
+---
+title: Installation
+description: How to install and configure Keylio in your project
+---
+
+import { Callout } from 'fumadocs-ui/components/callout'
+import { Card, Cards } from 'fumadocs-ui/components/card'
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs'
+
+## Overview
+
+This guide walks you through installing **Keylio** and integrating it into a modern **Next.js + TypeScript** application using Prisma.
+
+By the end of this page, you will have:
+- Installed Keylio
+- Configured authentication options
+- Connected Keylio to a Next.js API route
+
+---
+
+## Beta Status
+
+<Callout type="warning">
+Keylio is currently in <strong>beta</strong>.
+The API is stable, but minor breaking changes may occur before the first stable release.
+</Callout>
+
+---
+
+
+## Prerequisites
+
+Before installing Keylio, ensure your environment meets the following requirements:
+
+- **Node.js 18.0.0** or later
+- A **TypeScript** or modern JavaScript project
+- A database setup (for example, Prisma) for persistent sessions
+
+<Callout type="info">
+Keylio is designed for modern Node.js runtimes and provides the best experience with TypeScript.
+</Callout>
+
+---
+
+## Installation
+
+Install Keylio using your preferred package manager:
+
+<Tabs items={['npm', 'pnpm', 'yarn']}>
+  <Tab value="npm">
+  ```bash
+  npm install keylio@beta
+  ```
+  </Tab>
+  <Tab value="pnpm">
+  ```bash
+  pnpm add keylio@beta
+  ```
+  </Tab>
+  <Tab value="yarn">
+  ```bash
+  yarn add keylio@beta
+  ```
+  </Tab>
+</Tabs>
+
+## Next Steps
+
+<Cards>
+  <Card title="Quick Start" href="/docs/basic-usage">
+    Real-world usage examples for your application.
+  </Card>
+  <Card title="API Reference" href="/docs/references">
+    Explore all available utilities and methods.
+  </Card>
+
+</Cards>

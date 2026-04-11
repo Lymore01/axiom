@@ -1,0 +1,81 @@
+---
+title: Introduction
+description: A modern utility library for authentication and cryptographic workflows
+---
+
+import { Callout } from 'fumadocs-ui/components/callout'
+import { Card, Cards } from 'fumadocs-ui/components/card'
+import { Braces, Fingerprint, Key, Lock } from 'lucide-react'
+
+**Keylio** is a modern, type-safe utility library that simplifies **authentication** and **cryptographic operations** in Node.js and TypeScript applications.
+
+It provides a unified, developer-friendly API for common security tasks, allowing you to focus on building features instead of wiring low-level libraries together.
+
+<Callout type="info">
+Keylio is designed to be simple, opinionated, and production-ready - without locking you into complex abstractions.
+</Callout>
+
+<Callout type="warn" title="Adapter Support">
+  Currently, Keylio exclusively supports **Prisma** adapters. Support for other database adapters is still in development.
+</Callout>
+
+---
+
+## What Keylio Solves
+
+In many projects, authentication logic quickly becomes fragmented across multiple libraries and configurations. Keylio brings these concerns together under a **single, consistent interface**, reducing boilerplate and potential security pitfalls.
+
+Instead of managing raw dependencies and repetitive setup, you get sensible defaults and a clean API out of the box.
+
+---
+
+## Core Features
+
+Keylio provides utilities for the most common security-related workflows:
+
+<Cards>
+  <Card title="Password Hashing" icon={<Lock />}>
+    Secure password hashing and verification built on top of **bcrypt**.
+  </Card>
+
+  <Card title="Token Management" icon={<Key />}>
+    Generate and validate JSON Web Tokens (JWT) using **jsonwebtoken**.
+  </Card>
+
+  <Card title="Identity Utilities" icon={<Fingerprint />}>
+    Create unique, collision-resistant identifiers powered by **uuid**.
+  </Card>
+
+  <Card title="Type Safety" icon={<Braces />}>
+    Fully written in TypeScript with strong typing across all public APIs.
+  </Card>
+</Cards>
+
+---
+
+## Who Is Keylio For?
+
+Keylio is ideal for:
+
+- Backend developers building Node.js or TypeScript APIs
+- Projects that need **simple but secure authentication utilities**
+- Teams that value **clarity, type safety, and maintainability**
+- Developers who want fewer dependencies and less configuration noise
+
+
+<Callout type="tip">
+You don’t need to adopt everything at once - Keylio utilities can be used independently.
+</Callout>
+
+---
+
+## Next Steps
+
+<Cards>
+  <Card title="Installation" href="/docs/installation">
+    Get started with Keylio in just a few steps.
+  </Card>
+  <Card title="Basic Usage" href="/docs/basic-usage">
+    Get started with Keylio in just a few steps.
+  </Card>
+</Cards>

@@ -1,0 +1,244 @@
+---
+title: References
+description: Keylio API reference documentation
+---
+
+import { TypeTable } from 'fumadocs-ui/components/type-table';
+
+## Core
+
+### Keylio
+
+The main class for initializing the authentication system.
+
+```typescript
+import { Keylio } from "keylio";
+
+const keylio = new Keylio(config);
+```
+
+#### Parameters
+
+<TypeTable
+  type={{
+    config: {
+      description: 'Configuration options for Keylio.',
+      type: 'KeylioAuthConfig',
+    }
+  }}
+/>
+
+## Client (React)
+
+React hooks and providers for client-side session management.
+
+```typescript
+import { KeylioSessionProvider, useSession } from "keylio/react";
+```
+
+### KeylioSessionProvider
+
+Context provider that must wrap your application to enable session management.
+
+<TypeTable
+  type={{
+    children: {
+      description: 'The components of your application.',
+      type: 'React.ReactNode',
+    }
+  }}
+/>
+
+### useSession
+
+Hook to access the current session state and authentication methods.
+
+<TypeTable
+  type={{
+    data: {
+      description: 'The active session object containing user details and token.',
+      type: 'Session | null',
+    },
+    status: {
+      description: 'The current authentication state of the user.',
+      type: '"authenticated" | "unauthenticated" | "loading"',
+    },
+    refresh: {
+      description: 'Function to manually reload the session from the server.',
+      type: '() => Promise<void>',
+    },
+    signOut: {
+      description: 'Function to sign out the current user.',
+      type: '() => Promise<void>',
+    },
+    setSession: {
+      description: 'Manually update the client-side session state.',
+      type: '(session: SessionState) => void',
+    }
+  }}
+/>
+
+## Server (Next.js)
+
+Utilities for integrating Keylio with Next.js.
+
+```typescript
+import { KeylioNextHandler } from "keylio/next";
+```
+
+### KeylioNextHandler
+
+Creates the API route handlers for Next.js App Router.
+
+```typescript
+export const { GET, POST } = KeylioNextHandler(keylio);
+```
+
+## Adapters
+
+Database adapters for persisting sessions.
+
+### Prisma Adapter
+
+```typescript
+import { prismaAdapter } from "keylio/adapters/prisma";
+```
+
+### MongoDB Adapter
+
+```typescript
+import { mongodbAdapter } from "keylio/adapters/mongodb";
+```
+
+## Types
+
+Common TypeScript definitions used throughout the library.
+
+```typescript
+import type { KeylioAuthConfig } from "keylio/types";
+```
+
+### KeylioAuthConfig
+
+The primary configuration object for initializing Keylio.
+
+<TypeTable
+  type={{
+    adapter: {
+      description: 'Database adapter instance (e.g., Prisma, MongoDB). Required.',
+      type: 'DBAdapter',
+      required: true,
+    },
+    session: {
+      description: 'Session configuration. The `secret` field is required.',
+      type: 'SessionOptions',
+      required: true,
+    },
+    auth: {
+      description: 'Configuration for authentication providers (Credentials, OAuth, Phone).',
+      type: 'AuthConfig',
+    },
+    callbacks: {
+      description: 'Event handlers for authentication lifecycle events.',
+      type: 'Callbacks',
+    },
+    features: {
+      description: 'Enable optional features like MFA or API keys.',
+      type: 'OptionalFeatures',
+    },
+    database: {
+      description: 'Direct database connection options (alternative to adapter).',
+      type: 'DbOptions',
+    },
+    roles: {
+      description: 'Role-based access control permissions.',
+      type: 'RolePermissions',
+    }
+  }}
+/>
+
+### SessionOptions
+
+<TypeTable
+  type={{
+    strategy: {
+      description: 'Mechanism to handle sessions. "jwt" uses stateless tokens, "database" persists sessions.',
+      type: '"jwt" | "database"',
+      default: "jwt"
+    },
+    secret: {
+      description: 'Secret key for signing tokens. Required.',
+      type: 'string',
+      required: true,
+    },
+    maxAge: {
+      description: 'Time in seconds until the session expires. Default is 1 day (86400).',
+      type: 'number',
+    },
+    cookie: {
+      description: 'Advanced cookie configuration (secure, sameSite, etc.).',
+      type: 'CookieOptions',
+    }
+  }}
+/>
+
+### AuthConfig
+
+<TypeTable
+  type={{
+    credentials: {
+      description: 'Email and password authentication settings.',
+      type: 'EmailPasswordOptions',
+    },
+    oauth: {
+      description: 'Array of OAuth provider configurations.',
+      type: 'OAuthProviderConfig[]',
+    },
+    phoneOtp: {
+      description: 'Phone number and OTP authentication settings.',
+      type: 'PhoneOtpOptions',
+    }
+  }}
+/>
+
+### Callbacks
+
+<TypeTable
+  type={{
+    onSignup: {
+      description: 'Async function triggered upon successful user registration.',
+      type: '(user: any) => Promise<void> | void',
+    },
+    onLogin: {
+      description: 'Async function triggered upon successful login.',
+      type: '(user: any) => Promise<void> | void',
+    },
+    jwt: {
+      description: 'Callback to modify the JWT token before it is signed.',
+      type: '(token: any, user?: any) => Promise<any> | any',
+    }
+  }}
+/>
+
+### OptionalFeatures
+
+<TypeTable
+  type={{
+    multiFactorAuth: {
+      description: 'Enable Multi-Factor Authentication support.',
+      type: 'boolean',
+    },
+    apiKeys: {
+      description: 'Enable API Key management for users.',
+      type: 'boolean',
+    },
+    loginAnalytics: {
+      description: 'Track login attempts and metadata.',
+      type: 'boolean',
+    },
+    customEmailTemplates: {
+      description: 'Allow usage of custom email templates for verification/reset.',
+      type: 'boolean',
+    }
+  }}
+/>
