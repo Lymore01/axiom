@@ -13,9 +13,11 @@ Validation isn't an afterthought in Axeom—it's part of the Blueprint. Axeom pr
 
 Axeom's built-in `s` utility is an ultra-lightweight validation engine designed specifically for the framework. It provides a familiar, chainable API with zero external dependencies, keeping your bundle size practically non-existent.
 
-```typescript
-import { s } from 'axeom';
-
+```typescript twoslash
+// @noErrors
+import Axeom, { s } from 'axeom';
+const app = new Axeom();
+// ---cut---
 const CreateUserSchema = s.object({
   username: s.string().min(3),
   email: s.string().email(),
@@ -38,9 +40,12 @@ app.post("/users", (ctx) => {
 
 Axeom is library-agnostic. Because the engine relies on a simple `Validator` interface, you can use any library that provides a `.parse()` or equivalent method.
 
-```typescript
+```typescript twoslash
+// @noErrors
+import Axeom from 'axeom';
 import { z } from 'zod';
-
+const app = new Axeom();
+// ---cut---
 app.post("/external", (ctx) => {
   return ctx.body;
 }, {
@@ -56,7 +61,11 @@ app.post("/external", (ctx) => {
 
 Axeom's validation covers every part of the request. Once validated, the data is automatically parsed and available on the context with full type safety.
 
-```typescript
+```typescript twoslash
+// @noErrors
+import Axeom, { s } from 'axeom';
+const app = new Axeom();
+// ---cut---
 app.get("/search", (ctx) => {
   const { q, page } = ctx.query;
   return { results: [], page };

@@ -26,7 +26,11 @@ Axeom allows you to inject dependencies or data into your context using `.decora
 ### `.decorate()`
 Use this for static dependencies like database clients that don't change per-request.
 
-```typescript
+```typescript twoslash
+// @noErrors
+import Axeom from 'axeom';
+const PrismaClient = class { user = { findMany: () => [{ id: 1 }] } };
+// ---cut---
 const app = new Axeom()
   .decorate({
     db: new PrismaClient(),
@@ -42,8 +46,12 @@ app.get("/users", (ctx) => {
 ### `.derive()`
 Use this for per-request computations, like extracting authenticated users.
 
-```typescript
-const app = new Axeom()
+```typescript twoslash
+// @noErrors
+import Axeom from 'axeom';
+const app = new Axeom();
+// ---cut---
+const engine = app
   .derive(async ({ headers }) => {
     const userId = headers.get("x-user-id");
     if (!userId) return { user: null };
@@ -53,7 +61,7 @@ const app = new Axeom()
     };
   });
 
-app.get("/me", (ctx) => {
+engine.get("/me", (ctx) => {
   return ctx.user; // ctx.user was derived per-request
 });
 ```
@@ -74,9 +82,14 @@ Axeom is designed for massive throughput. Instead of complex object spreading, i
 
 When you use `.group()`, it creates a branch of the engine. Derivations added inside a group only affect routes within that group.
 
-```typescript
+```typescript twoslash
+// @noErrors
+import Axeom from 'axeom';
+const app = new Axeom();
+const checkAdminAuth = async () => ({ admin: true });
+// ---cut---
 app.group("/admin", (admin) => {
-  return admin
+  admin
     .derive(checkAdminAuth)
     .get("/dashboard", (ctx) => {
        // ctx.admin is available here

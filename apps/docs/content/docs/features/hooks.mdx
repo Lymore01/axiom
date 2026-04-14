@@ -26,9 +26,11 @@ Understanding the sequence of hooks is key to building complex logic in a weight
 
 Hooks can be registered globally on the main app instance or locally within a group.
 
-```typescript
+```typescript twoslash
+// @noErrors
+import Axeom from 'axeom';
 const app = new Axeom();
-
+// ---cut---
 // Global Hook: Runs for EVERY request
 app.onRequest((ctx) => {
   console.log(`[GLOBAL]: ${ctx.request.url}`);
@@ -52,9 +54,13 @@ app.group("/api", (api) => {
 ### `onBeforeMatch`
 Use this for early-exit logic like maintenance modes or global redirects. It only has access to the raw `Request` object.
 
-```typescript
+```typescript twoslash
+// @noErrors
+import Axeom from 'axeom';
+const app = new Axeom();
+// ---cut---
 app.onBeforeMatch((req) => {
-  if (process.env.MAINTENANCE === "true") {
+  if (req.headers.has("X-Maintenance")) {
     return new Response("Service Unavailable", { status: 503 });
   }
 });
@@ -63,13 +69,17 @@ app.onBeforeMatch((req) => {
 ### `onBeforeHandle` & `onAfterHandle`
 These are the most common hooks for authorization and logging. `onBeforeHandle` can stop the request by returning a `Response`.
 
-```typescript
+```typescript twoslash
+// @noErrors
+import Axeom from 'axeom';
+const app = new Axeom();
+// ---cut---
 app.onBeforeHandle((ctx) => {
-  ctx.timeStart = performance.now();
+  (ctx as any).timeStart = performance.now();
 });
 
 app.onAfterHandle((ctx) => {
-  const duration = performance.now() - ctx.timeStart;
+  const duration = performance.now() - (ctx as any).timeStart;
   console.log(`Handler took ${duration}ms`);
 });
 ```
@@ -77,7 +87,11 @@ app.onAfterHandle((ctx) => {
 ### `onResponse`
 This hook receives both the generated `Response` and the `Context`. Use it to inject custom headers or cookies globally.
 
-```typescript
+```typescript twoslash
+// @noErrors
+import Axeom from 'axeom';
+const app = new Axeom();
+// ---cut---
 app.onResponse((res, ctx) => {
   res.headers.set("X-Axeom-Version", "1.0.0");
   return res; // You must return a Response!
