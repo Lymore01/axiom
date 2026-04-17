@@ -22,7 +22,9 @@ export const authPlugin = (options: AuthOptions) => {
   const encoder = new TextEncoder();
   const rawSecret = encoder.encode(options.secret);
 
-  return <T extends Record<string, any>, D extends Record<string, any>>(app: Axeom<T, D>) => {
+  return <T extends Record<string, any>, D extends Record<string, any>>(
+    app: Axeom<T, D>,
+  ) => {
     return app.decorate({
       auth: {
         /**
@@ -47,7 +49,8 @@ export const authPlugin = (options: AuthOptions) => {
               audience: options.audience || "Axeom-app",
             });
             return payload as unknown as User;
-          } catch {
+          } catch (e) {
+            console.error("[Auth Plugin] Verify Error:", e);
             return null;
           }
         },
@@ -67,16 +70,32 @@ export const authPlugin = (options: AuthOptions) => {
  */
 export const bearerGuard = () => {
   return async <T extends Record<string, any>, D extends Record<string, any>>(
-    ctx: Context<any, any, D & { auth: { verify: (t: string) => Promise<User | null> } }>,
+    ctx: Context<
+      any,
+      any,
+      D & { auth: { verify: (t: string) => Promise<User | null> } }
+    >,
   ) => {
+    let token = null;
     const authHeader = ctx.headers.get("Authorization");
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.split(" ")[1];
+    } else {
+      // Fallback to cookie
+      const cookieHeader = ctx.headers.get("Cookie");
+      if (cookieHeader) {
+        const match = cookieHeader.match(/axeom_token=([^;]+)/);
+        if (match) token = match[1];
+      }
+    }
+
+    if (!token) {
       return new Response(
         JSON.stringify({
           status: "error",
           code: "UNAUTHORIZED",
-          message: "Authorization header is missing or invalid",
+          message: "Authorization required (Header or Cookie missing)",
         }),
         {
           status: 401,
@@ -85,15 +104,14 @@ export const bearerGuard = () => {
       );
     }
 
-    const token = authHeader.split(" ")[1];
     const user = await ctx.auth.verify(token);
 
     if (!user) {
       return new Response(
         JSON.stringify({
           status: "error",
-          code: "INVALID_TOKEN",
-          message: "Token is invalid or expired",
+          code: "UNAUTHORIZED",
+          message: "Invalid or expired session",
         }),
         {
           status: 401,
@@ -109,7 +127,10 @@ export const bearerGuard = () => {
 /**
  * A helper to register standard login/profile routes.
  */
-export const authRoutes = <T extends Record<string, any>, D extends Record<string, any>>(
+export const authRoutes = <
+  T extends Record<string, any>,
+  D extends Record<string, any>,
+>(
   app: Axeom<T, D>,
 ) => {
   // We expect the authPlugin to have been used before this

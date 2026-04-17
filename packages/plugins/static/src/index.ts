@@ -1,6 +1,6 @@
+import type { Axeom } from "@axeom/core";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize, resolve } from "node:path";
-import type { Axeom } from "@axeom/core";
 
 export const MIME_TYPES: Record<string, string> = {
   ".html": "text/html",
@@ -39,7 +39,9 @@ export function staticPlugin(options: StaticOptions) {
   const { prefix, rootPath, maxAge = 3600 } = options;
   const absRoot = resolve(rootPath);
 
-  return <T extends Record<string, any>, D extends Record<string, any>>(app: Axeom<T, D>) =>
+  return <T extends Record<string, any>, D extends Record<string, any>>(
+    app: Axeom<T, D>,
+  ) =>
     app.get(`${prefix}/*` as any, async (ctx: any) => {
       try {
         const relativePath = (ctx.params as any)["*"] || "";
@@ -52,8 +54,23 @@ export function staticPlugin(options: StaticOptions) {
           return new Response("Forbidden", { status: 403 });
         }
 
-        const stats = await stat(filePath);
-        if (!stats.isFile()) {
+        let stats = await stat(filePath);
+        let finalPath = filePath;
+
+        if (stats.isDirectory()) {
+          const indexPath = join(filePath, "index.html");
+          try {
+            const indexStats = await stat(indexPath);
+            if (indexStats.isFile()) {
+              finalPath = indexPath;
+              stats = indexStats;
+            } else {
+              return new Response("Not Found", { status: 404 });
+            }
+          } catch {
+            return new Response("Not Found", { status: 404 });
+          }
+        } else if (!stats.isFile()) {
           return new Response("Not a file", { status: 404 });
         }
 
@@ -65,8 +82,8 @@ export function staticPlugin(options: StaticOptions) {
           return new Response(null, { status: 304 });
         }
 
-        const content = await readFile(filePath);
-        const ext = extname(filePath).toLowerCase();
+        const content = await readFile(finalPath);
+        const ext = extname(finalPath).toLowerCase();
 
         return new Response(content, {
           headers: {
