@@ -48,7 +48,6 @@ export const compression = (options: CompressionOptions = {}) => {
       if (!encoding) return res;
 
       try {
-        // @ts-expect-error - CompressionStream is available in modern runtimes (Bun, Deno, Node 18+)
         const compressionStream = new CompressionStream(encoding);
         const compressedBody = res.body.pipeThrough(compressionStream);
 

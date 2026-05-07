@@ -43,3 +43,9 @@ export class InternalServerError extends AxeomError {
     super(message, 500, "INTERNAL_SERVER_ERROR");
   }
 }
+
+export class ConflictError extends AxeomError {
+  constructor(message: string = "Conflict", details?: any) {
+    super(message, 409, "CONFLICT", details);
+  }
+}

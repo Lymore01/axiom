@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Axeom | Production Kitchen Sink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      :root {
+        --bg: #000000;
+        --card: #050505;
+        --border: rgba(255, 255, 255, 0.08);
+        --primary: #ffffff;
+        --primary-dim: rgba(255, 255, 255, 0.4);
+        --text-main: #ffffff;
+        --text-dim: rgba(255, 255, 255, 0.4);
+        --accent: #ffffff;
+        --error: #ef4444;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--text-main);
+        font-family: "Outfit", sans-serif;
+        min-height: 100vh;
+        padding: 2rem;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      /* --- Blueprint System --- */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        pointer-events: none;
+        opacity: 0.03;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      }
+
+      .blueprint-line-h {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          rgba(255, 255, 255, 0.05),
+          transparent
+        );
+        pointer-events: none;
+      }
+      .blueprint-line-v {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: linear-gradient(
+          to bottom,
+          transparent,
+          rgba(255, 255, 255, 0.05),
+          transparent
+        );
+        pointer-events: none;
+      }
+      .blueprint-label {
+        position: absolute;
+        font-family: var(--font-mono);
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.15);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        pointer-events: none;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 4rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 2rem;
+      }
+
+      .logo-area h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        letter-spacing: -0.05em;
+        text-transform: uppercase;
+      }
+      .logo-area p {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+      }
+
+      .card {
+        background: var(--card);
+        padding: 2rem;
+        transition: all 0.3s;
+        position: relative;
+      }
+      .card:hover {
+        background: #080808;
+      }
+
+      .card-title {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--text-dim);
+      }
+      .card-title i {
+        color: var(--primary);
+        width: 14px;
+      }
+
+      /* Auth UI */
+      #authSection {
+        grid-column: span 4;
+      }
+      #notesSection {
+        grid-column: span 8;
+      }
+      .hidden {
+        display: none !important;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        background: #000000;
+        border: 1px solid var(--border);
+        border-radius: 0;
+        padding: 1rem;
+        color: white;
+        font-family: var(--font-mono);
+        outline: none;
+        margin-bottom: 1rem;
+        font-size: 13px;
+      }
+      input:focus {
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+
+      /* Disable Autofill Styling */
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover,
+      input:-webkit-autofill:focus {
+        -webkit-text-fill-color: white;
+        -webkit-box-shadow: 0 0 0px 1000px #000 inset;
+        transition: background-color 5000s ease-in-out 0s;
+      }
+
+      button {
+        width: 100%;
+        background: var(--primary);
+        cursor: pointer;
+        font-family: var(--font-mono);
+        font-weight: 700;
+        border: none;
+        border-radius: 0;
+        padding: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-size: 11px;
+        transition: all 0.2s;
+      }
+      button:hover {
+        filter: invert(1);
+      }
+      button.secondary {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-main);
+      }
+      button.secondary:hover {
+        background: white;
+        color: black;
+      }
+      button.danger {
+        background: transparent;
+        border: 1px solid #333;
+        color: #666;
+      }
+      button.danger:hover {
+        background: var(--error);
+        color: white;
+        border-color: var(--error);
+      }
+
+      .note-item {
+        border-bottom: 1px solid var(--border);
+        padding: 1.5rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .note-content {
+        flex-grow: 1;
+        margin-right: 2rem;
+      }
+      .note-content p {
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+      }
+      .note-date {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        color: var(--text-dim);
+        text-transform: uppercase;
+      }
+
+      /* Metrics */
+      .metrics-grid {
+        grid-column: span 12;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+      }
+      .metric-chart-container {
+        height: 250px;
+        padding: 1rem 0;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      .avatar {
+        width: 48px;
+        height: 48px;
+        background: #ffffff;
+        color: black;
+        border-radius: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="blueprint-line-h" style="top: 15%"></div>
+    <div class="blueprint-line-h" style="top: 50%"></div>
+    <div class="blueprint-line-h" style="top: 85%"></div>
+    <div class="blueprint-line-v" style="left: 15%"></div>
+    <div class="blueprint-line-v" style="left: 85%"></div>
+    <div class="blueprint-label" style="top: 16%; left: 16%">SYS_A-01</div>
+    <div class="blueprint-label" style="bottom: 16%; right: 16%">NODE_X-99</div>
+    <div class="container">
+      <header>
+        <div class="logo-area">
+          <h1>Axeom</h1>
+          <p>Real-world Production Kitchen Sink</p>
+        </div>
+        <div id="userInfo" class="hidden">
+          <div class="user-info">
+            <div class="avatar" id="userInitial">U</div>
+            <div>
+              <div id="usernameDisplay" style="font-weight: 600">Username</div>
+              <a
+                href="#"
+                onclick="logout()"
+                style="
+                  color: var(--primary);
+                  font-size: 0.8rem;
+                  text-decoration: none;
+                "
+                >Sign Out</a
+              >
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="grid">
+        <!-- Auth Card -->
+        <div class="card" id="authSection">
+          <div id="loginForm">
+            <div class="card-title">
+              <i data-lucide="lock"></i> Authentication
+            </div>
+            <input
+              type="text"
+              id="username"
+              placeholder="Username (min 3 chars)"
+              autocomplete="off"
+            />
+            <input
+              type="password"
+              id="password"
+              placeholder="Password (min 8 chars)"
+              autocomplete="off"
+            />
+            <button onclick="login()">Sign In</button>
+            <button class="secondary" onclick="toggleAuth(false)">
+              Create Account
+            </button>
+            <p
+              id="authError"
+              style="
+                color: var(--error);
+                font-size: 0.85rem;
+                text-align: center;
+              "
+            ></p>
+          </div>
+          <div id="registerForm" class="hidden">
+            <div class="card-title">
+              <i data-lucide="user-plus"></i> Create Account
+            </div>
+            <input
+              type="text"
+              id="regUsername"
+              placeholder="USERNAME"
+              autocomplete="off"
+            />
+            <input
+              type="password"
+              id="regPassword"
+              placeholder="PASSWORD"
+              autocomplete="off"
+            />
+            <button onclick="register()">Register</button>
+            <button class="secondary" onclick="toggleAuth(true)">
+              Back to Login
+            </button>
+          </div>
+        </div>
+
+        <!-- Notes Card (Protected) -->
+        <div class="card" id="notesSection">
+          <div id="notesLocked" style="text-align: center; padding: 4rem 0">
+            <i
+              data-lucide="shield-alert"
+              style="
+                width: 48px;
+                height: 48px;
+                color: var(--text-dim);
+                margin-bottom: 1rem;
+              "
+            ></i>
+            <h3>Protected Content</h3>
+            <p style="color: var(--text-dim)">
+              Sign in to access your private notes stored in SQLite.
+            </p>
+          </div>
+          <div id="notesContent" class="hidden">
+            <div class="card-title">
+              <i data-lucide="edit-3"></i> My Private Notes
+            </div>
+            <div style="display: flex; gap: 1rem">
+              <input
+                type="text"
+                id="noteContent"
+                placeholder="ENTER SYSTEM COMMAND OR NOTE..."
+                autocomplete="off"
+                style="flex-grow: 1"
+              />
+              <button
+                onclick="addNote()"
+                style="width: auto; padding: 0.75rem 1.5rem"
+              >
+                Add
+              </button>
+            </div>
+            <div id="notesList">
+              <!-- Loaded via API -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="metrics-grid">
+          <div class="card">
+            <div class="card-title">
+              <i data-lucide="activity"></i> Real-time CPU (SSE)
+            </div>
+            <div class="metric-chart-container">
+              <canvas id="cpuChart"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <i data-lucide="database"></i> Real-time Memory (SSE)
+            </div>
+            <div class="metric-chart-container">
+              <canvas id="memChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      lucide.createIcons();
+      var token = null;
+      var authenticatedUser = null;
+
+      try {
+        token = localStorage.getItem("axeom_token");
+        authenticatedUser = JSON.parse(localStorage.getItem("axeom_user"));
+      } catch (e) {
+        console.error("Error loading session:", e);
+      }
+
+      function toggleAuth(showLogin) {
+        document
+          .getElementById("loginForm")
+          .classList.toggle("hidden", !showLogin);
+        document
+          .getElementById("registerForm")
+          .classList.toggle("hidden", showLogin);
+      }
+
+      async function login() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        const errorEl = document.getElementById("authError");
+
+        try {
+          const res = await fetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            token = data.token;
+            authenticatedUser = data.user;
+            localStorage.setItem("axeom_token", token);
+            localStorage.setItem(
+              "axeom_user",
+              JSON.stringify(authenticatedUser),
+            );
+            await updateUI();
+          } else {
+            errorEl.textContent = data.message || "Login failed";
+          }
+        } catch (e) {
+          console.error("Login Error:", e);
+          errorEl.textContent = "Auth Process Error: " + e.message;
+        }
+      }
+
+      async function register() {
+        const username = document.getElementById("regUsername").value;
+        const password = document.getElementById("regPassword").value;
+        try {
+          const res = await fetch("/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            alert("Account created! Please sign in.");
+            toggleAuth(true);
+          } else {
+            alert(data.message || "Registration failed");
+          }
+        } catch (e) {
+          alert("Connection error");
+        }
+      }
+
+      function logout() {
+        localStorage.removeItem("axeom_token");
+        localStorage.removeItem("axeom_user");
+        // Clear the cookie for browser-bar access
+        document.cookie =
+          "axeom_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+        token = null;
+        authenticatedUser = null;
+        updateUI();
+      }
+
+      async function updateUI() {
+        const isAuth = !!token;
+        document
+          .getElementById("authSection")
+          .classList.toggle("hidden", isAuth);
+        document.getElementById("userInfo").classList.toggle("hidden", !isAuth);
+        document
+          .getElementById("notesLocked")
+          .classList.toggle("hidden", isAuth);
+        document
+          .getElementById("notesContent")
+          .classList.toggle("hidden", !isAuth);
+
+        if (isAuth) {
+          document.getElementById("usernameDisplay").textContent =
+            authenticatedUser.username;
+          document.getElementById("userInitial").textContent =
+            authenticatedUser.username[0].toUpperCase();
+          loadNotes();
+        }
+      }
+
+      async function loadNotes() {
+        console.log(
+          "[Dashboard] Loading notes with token:",
+          token ? token.substring(0, 15) + "..." : "MISSING",
+        );
+        const res = await fetch("/api/notes", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.status === 401) return logout();
+        const notes = await res.json();
+        const list = document.getElementById("notesList");
+        list.innerHTML = notes
+          .map(
+            (n) => `
+                <div class="note-item">
+                    <div class="note-content">
+                        ${n.content}
+                        <span class="note-date">${new Date(n.created_at).toLocaleString()}</span>
+                    </div>
+                    <button class="danger" style="width: auto; margin:0;" onclick="deleteNote('${n.id}')">
+                        <i data-lucide="trash-2" style="width:16px;"></i>
+                    </button>
+                </div>
+            `,
+          )
+          .join("");
+        lucide.createIcons();
+      }
+
+      async function addNote() {
+        const input = document.getElementById("noteContent");
+        const content = input.value;
+        if (!content) return;
+        const res = await fetch("/api/notes", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ content }),
+        });
+        if (res.ok) {
+          input.value = "";
+          loadNotes();
+        }
+      }
+
+      async function deleteNote(id) {
+        await fetch(`/api/notes/${id}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        loadNotes();
+      }
+
+      // --- SSE Metrics ---
+      const cpuChart = createChart("cpuChart", "CPU Usage %", "#6366f1");
+      const memChart = createChart("memChart", "Memory usage (MB)", "#10b981");
+
+      function createChart(id, label, color) {
+        return new Chart(document.getElementById(id), {
+          type: "line",
+          data: {
+            labels: [],
+            datasets: [{ label, borderColor: color, data: [], tension: 0.4 }],
+          },
+          options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } },
+          },
+        });
+      }
+
+      const es = new EventSource("/api/metrics");
+      es.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        [cpuChart, memChart].forEach((chart, i) => {
+          const val = i === 0 ? data.cpu : data.mem;
+          if (chart.data.labels.length > 20) {
+            chart.data.labels.shift();
+            chart.data.datasets[0].data.shift();
+          }
+          chart.data.labels.push(data.time);
+          chart.data.datasets[0].data.push(val);
+          chart.update("none");
+        });
+      };
+
+      updateUI();
+    </script>
+  </body>
+</html>

@@ -9,32 +9,26 @@ export interface UploadOptions {
  * and uses the fastest native method to write to disk.
  */
 export async function saveFile(file: File | Blob, path: string) {
-  // @ts-expect-error - Bun detection
+  // Bun detection
   if (typeof Bun !== "undefined") {
-    // @ts-expect-error
     const { dirname } = await import("node:path");
-    // @ts-expect-error
     await (await import("node:fs/promises")).mkdir(dirname(path), {
       recursive: true,
     });
-    // @ts-expect-error
     return await Bun.write(path, file);
   }
 
   // @ts-expect-error - Deno detection
   if (typeof Deno !== "undefined" && typeof Deno.writeFile === "function") {
-    // @ts-expect-error
     const { dirname } = await import("node:path");
     // @ts-expect-error
     await Deno.mkdir(dirname(path), { recursive: true });
-    // @ts-expect-error
     const data = new Uint8Array(await file.arrayBuffer());
     // @ts-expect-error
     return await Deno.writeFile(path, data);
   }
 
   // Node.js detection
-  // @ts-expect-error
   if (typeof process !== "undefined" && process.release?.name === "node") {
     // Dynamic import to avoid including fs in Bun/Deno bundles
     const { writeFile, mkdir } = await import("node:fs/promises");

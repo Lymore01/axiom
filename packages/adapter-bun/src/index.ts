@@ -14,7 +14,6 @@ export interface BunAdapterOptions {
  */
 export function createBunAdapter(Axeom: Axeom<any, any>, options: BunAdapterOptions = {}) {
   // Check if we are running in Bun
-  // @ts-expect-error
   if (typeof Bun === "undefined") {
     console.warn(
       "\x1b[33m[Axeom Warning]\x1b[0m createBunAdapter is designed for the Bun runtime.",

@@ -1,0 +1,22 @@
+{
+  "name": "kitchen-sink",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "bun --watch src/index.ts"
+  },
+  "dependencies": {
+    "axeom": "workspace:*",
+    "@axeom/auth": "workspace:*",
+    "@axeom/compression": "workspace:*",
+    "@axeom/cors": "workspace:*",
+    "@axeom/rate-limit": "workspace:*",
+    "@axeom/security": "workspace:*",
+    "@axeom/static": "workspace:*",
+    "@axeom/swagger": "workspace:*",
+    "@axeom/upload": "workspace:*",
+    "@axeom/ws": "workspace:*",
+    "@axeom/client": "workspace:*",
+    "zod": "^3.22.4"
+  },
+  "private": true
+}

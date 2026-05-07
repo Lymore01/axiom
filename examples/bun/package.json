@@ -1,6 +1,6 @@
 {
   "name": "bun-example",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "scripts": {
     "dev": "bun --watch src/index.ts"
   },
@@ -8,5 +8,6 @@
     "axeom": "workspace:*",
     "@axeom/auth": "workspace:*",
     "zod": "^3.22.4"
-  }
+  },
+  "private": true
 }

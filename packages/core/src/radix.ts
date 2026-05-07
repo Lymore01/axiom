@@ -1,6 +1,9 @@
 import type { Route } from "./types";
 
-export class RadixNode<T extends Record<string, any>, D extends Record<string, any>> {
+export class RadixNode<
+  T extends Record<string, any>,
+  D extends Record<string, any>,
+> {
   public part: string;
   public children: Map<string, RadixNode<T, D>> = new Map();
   public wildcardChild: RadixNode<T, D> | null = null;
@@ -13,7 +16,12 @@ export class RadixNode<T extends Record<string, any>, D extends Record<string, a
     this.paramName = paramName;
   }
 
-  public insert(segments: string[], method: string, route: Route<T, D>, index: number = 0): void {
+  public insert(
+    segments: string[],
+    method: string,
+    route: Route<T, D>,
+    index: number = 0,
+  ): void {
     if (index === segments.length) {
       this.handlers.set(method, route);
       return;
@@ -41,7 +49,9 @@ export class RadixNode<T extends Record<string, any>, D extends Record<string, a
       if (!this.children.has(currentSegment)) {
         this.children.set(currentSegment, new RadixNode(currentSegment));
       }
-      this.children.get(currentSegment)!.insert(segments, method, route, index + 1);
+      this.children
+        .get(currentSegment)!
+        .insert(segments, method, route, index + 1);
     }
   }
 
@@ -53,7 +63,17 @@ export class RadixNode<T extends Record<string, any>, D extends Record<string, a
   ): { route: Route<T, D>; params: Record<string, string> } | null {
     if (index === segments.length) {
       const route = this.handlers.get(method);
-      return route ? { route, params } : null;
+      if (route) return { route, params };
+
+      // Fallback: If we are at the end, a '/*' catch-all on this node should match
+      if (this.catchAllChild) {
+        const caRoute = this.catchAllChild.handlers.get(method);
+        if (caRoute) {
+          params["*"] = "";
+          return { route: caRoute, params };
+        }
+      }
+      return null;
     }
 
     const currentSegment = segments[index];
@@ -69,7 +89,12 @@ export class RadixNode<T extends Record<string, any>, D extends Record<string, a
         ...params,
         [this.wildcardChild.paramName]: currentSegment,
       };
-      const result = this.wildcardChild.search(segments, method, index + 1, newParams);
+      const result = this.wildcardChild.search(
+        segments,
+        method,
+        index + 1,
+        newParams,
+      );
       if (result) return result;
     }
 
@@ -89,7 +114,10 @@ export class RadixNode<T extends Record<string, any>, D extends Record<string, a
 /**
  * A High-performance path matching tree that supports static, parameter (:id), and catch-all (*) segments.
  */
-export class RadixTree<T extends Record<string, any>, D extends Record<string, any>> {
+export class RadixTree<
+  T extends Record<string, any>,
+  D extends Record<string, any>,
+> {
   private root: RadixNode<T, D> = new RadixNode("");
 
   public add(method: string, path: string, route: Route<T, D>) {

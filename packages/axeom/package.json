@@ -1,17 +1,41 @@
 {
   "name": "axeom",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "type": "module",
   "description": "The weightless framework for heavy performance",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts",
-    "./web": "./src/adapters/web.ts",
-    "./express": "./src/adapters/express.ts",
-    "./client": "./src/client.ts",
-    "./swagger": "./src/plugins/swagger.ts",
-    "./ws": "./src/plugins/ws.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./web": {
+      "types": "./dist/adapters/web.d.ts",
+      "import": "./dist/adapters/web.js",
+      "require": "./dist/adapters/web.cjs"
+    },
+    "./express": {
+      "types": "./dist/adapters/express.d.ts",
+      "import": "./dist/adapters/express.js",
+      "require": "./dist/adapters/express.cjs"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "require": "./dist/client.cjs"
+    },
+    "./swagger": {
+      "types": "./dist/plugins/swagger.d.ts",
+      "import": "./dist/plugins/swagger.js",
+      "require": "./dist/plugins/swagger.cjs"
+    },
+    "./ws": {
+      "types": "./dist/plugins/ws.d.ts",
+      "import": "./dist/plugins/ws.js",
+      "require": "./dist/plugins/ws.cjs"
+    }
   },
   "dependencies": {
     "@axeom/core": "workspace:*",
@@ -42,5 +66,13 @@
     "@axeom/ws": {
       "optional": true
     }
+  },
+  "module": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
   }
 }

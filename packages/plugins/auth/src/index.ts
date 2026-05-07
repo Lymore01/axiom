@@ -132,7 +132,7 @@ export const authRoutes = <
   D extends Record<string, any>,
 >(
   app: Axeom<T, D>,
-) => {
+): Axeom<any, any> => {
   // We expect the authPlugin to have been used before this
   const authApp = app as unknown as Axeom<
     T,

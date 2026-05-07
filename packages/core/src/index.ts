@@ -1,5 +1,12 @@
 import { type Logger } from "@axeom/logger-lib";
-import { AxeomError } from "./errors";
+import {
+  AxeomError,
+  BadRequestError,
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from "./errors";
 import { Hooks } from "./hooks";
 import { Router } from "./router";
 import type {
@@ -26,19 +33,32 @@ export const $SERVER = Symbol("Axeom:server");
 class InternalContext {
   public params: any = {};
   public query: any = {};
-  public headers: Headers;
   public request: Request;
   public time: number;
   public body: any = undefined;
-  private _responseHeaders: Record<string, string> = {};
+  private _responseHeaders: Record<string, string>;
   private _server: any;
 
-  constructor(request: Request, server: any, startTime: number, decorators: any) {
+  constructor(
+    request: Request,
+    server: any,
+    startTime: number,
+    decorators: any,
+  ) {
     this.request = request;
-    this.headers = request.headers;
     this._server = server;
     this.time = startTime;
+    this._responseHeaders = {};
+
+    this.setResponseHeader = this.setResponseHeader.bind(this);
+    this.getResponseHeaders = this.getResponseHeaders.bind(this);
+    this.setDuration = this.setDuration.bind(this);
+
     Object.assign(this, decorators);
+  }
+
+  get headers(): Headers {
+    return this.request.headers;
   }
 
   setDuration(label: string): number {
@@ -66,7 +86,16 @@ class InternalContext {
  */
 export class Axeom<
   T extends Record<string, any> = {},
-  D extends Record<string, any> = { logger: Logger },
+  D extends Record<string, any> = {
+    logger: Logger;
+    error: {
+      NotFound: (msg?: string) => NotFoundError;
+      Unauthorized: (msg?: string) => UnauthorizedError;
+      BadRequest: (msg?: string) => BadRequestError;
+      Forbidden: (msg?: string) => ForbiddenError;
+      Conflict: (msg?: string) => ConflictError;
+    };
+  },
 > {
   public router = new Router<T, D>();
   private hooks = new Hooks<T, D>();
@@ -78,6 +107,23 @@ export class Axeom<
       error: () => {},
       warn: () => {},
       debug: () => {},
+    },
+    error: {
+      NotFound: (msg?: string) => {
+        throw new NotFoundError(msg);
+      },
+      Unauthorized: (msg?: string) => {
+        throw new UnauthorizedError(msg);
+      },
+      BadRequest: (msg?: string) => {
+        throw new BadRequestError(msg);
+      },
+      Forbidden: (msg?: string) => {
+        throw new ForbiddenError(msg);
+      },
+      Conflict: (msg?: string) => {
+        throw new ConflictError(msg);
+      },
     },
   };
 
@@ -253,10 +299,16 @@ export class Axeom<
    * It executes the entire request lifecycle including hooks, derivations, and validation.
    *
    * @param incomingRequest - The standard Web Request object.
+   * @param options - Optional runtime configuration (e.g. server instance).
    * @returns A promise resolving to a standard Web Response object.
    */
-  async handle(incomingRequest: Request): Promise<Response> {
-    const { response } = await this._handleHandshake(incomingRequest);
+  async handle(
+    incomingRequest: Request,
+    options?: { server?: any },
+  ): Promise<Response> {
+    const handshake = await this._handleHandshake(incomingRequest, options);
+    const { response } = handshake;
+    (response as any)._axeom_meta = handshake;
     return response;
   }
 
@@ -264,11 +316,22 @@ export class Axeom<
    * Internal method used by adapters to handle both HTTP and WebSocket handshakes.
    * Returns the final response and the context used for the request.
    */
-  async _handleHandshake(incomingRequest: Request): Promise<{ response: Response; context?: any }> {
+  async _handleHandshake(
+    incomingRequest: Request,
+    options?: { server?: any },
+  ): Promise<{ response: Response; context?: any }> {
     const url = new URL(incomingRequest.url);
     const { pathname } = url;
     const method = incomingRequest.method;
     const startTime = performance.now();
+    const server = options?.server || this.server;
+
+    const ctx = new InternalContext(
+      incomingRequest,
+      server,
+      startTime,
+      this.decorators,
+    );
 
     const finalizeResponse = async (
       res: Response,
@@ -276,10 +339,7 @@ export class Axeom<
       routeHooks?: any,
     ) => {
       let finalRes = res;
-      const safeCtx = currentCtx || {
-        request: incomingRequest,
-        getResponseHeaders: () => ({}),
-      };
+      const safeCtx = currentCtx || ctx;
 
       const hooksToRun = routeHooks?.onResponses || this.hooks.onResponses;
       if (hooksToRun && hooksToRun.length > 0) {
@@ -301,22 +361,22 @@ export class Axeom<
     if (this.hooks.onBeforeMatch.length > 0) {
       for (const hook of this.hooks.onBeforeMatch) {
         const result = await hook(incomingRequest);
-        if (result instanceof Response) return { response: await finalizeResponse(result) };
+        if (result instanceof Response)
+          return { response: await finalizeResponse(result, ctx) };
       }
     }
 
     const matched = this.router.match(method, pathname);
     if (!matched) {
-      return { response: await finalizeResponse(new Response("Route not found", { status: 404 })) };
+      return {
+        response: await finalizeResponse(
+          new Response("Route not found", { status: 404 }),
+          ctx,
+        ),
+      };
     }
 
     const { route, match } = matched;
-    const ctx = new InternalContext(
-      incomingRequest,
-      this.server,
-      startTime,
-      this.decorators,
-    );
 
     try {
       const rawParams: any = {};
@@ -330,7 +390,9 @@ export class Axeom<
         queryStart === -1
           ? {}
           : Object.fromEntries(
-              new URLSearchParams(incomingRequest.url.slice(queryStart + 1)).entries(),
+              new URLSearchParams(
+                incomingRequest.url.slice(queryStart + 1),
+              ).entries(),
             );
 
       if (method !== "GET" && method !== "HEAD") {
@@ -353,7 +415,10 @@ export class Axeom<
         for (const deriveFn of route.derives) {
           const result = await deriveFn(ctx as any);
           if (result instanceof Response)
-            return { response: await finalizeResponse(result, ctx, route), context: ctx };
+            return {
+              response: await finalizeResponse(result, ctx, route),
+              context: ctx,
+            };
           if (result) Object.assign(ctx, result);
         }
       }
@@ -368,7 +433,10 @@ export class Axeom<
         for (const hook of route.beforeHandles) {
           const response = await hook(ctx as any);
           if (response instanceof Response)
-            return { response: await finalizeResponse(response, ctx, route), context: ctx };
+            return {
+              response: await finalizeResponse(response, ctx, route),
+              context: ctx,
+            };
         }
       }
 
@@ -385,26 +453,26 @@ export class Axeom<
             ctx.body = await route.schema.body.parse(ctx.body);
           }
         } catch (e: any) {
-        const formattedErrors = formatValidationError(e);
-        return {
-          response: await finalizeResponse(
-            Response.json(
-              {
-                code: "VALIDATION_FAILED",
-                message: "Request validation failed",
-                errors: formattedErrors,
-              },
-              { status: 400 },
+          const formattedErrors = formatValidationError(e);
+          return {
+            response: await finalizeResponse(
+              Response.json(
+                {
+                  code: "VALIDATION_FAILED",
+                  message: "Request validation failed",
+                  errors: formattedErrors,
+                },
+                { status: 400 },
+              ),
+              ctx,
+              route,
             ),
-            ctx,
-            route,
-          ),
-        };
+          };
+        }
       }
-    }
 
-    let response: any;
-    if (route.handler) {
+      let response: any;
+      if (route.handler) {
         response = await route.handler(ctx as any);
       }
 
@@ -559,9 +627,8 @@ export class Axeom<
         : portOrOptions || {};
     const port = options.port || 3000;
 
-    // @ts-expect-error - Bun detection
+    // Bun detection
     if (typeof Bun !== "undefined") {
-      // @ts-expect-error
       this.server = Bun.serve({
         ...options,
         port,

@@ -30,7 +30,6 @@ export const wsPlugin = () => {
   ): Axeom<T, D> => {
     // Augment the instance with the .ws method at runtime
     (app as any).ws = function (path: string, handlers: WSHandlers) {
-      // @ts-expect-error - access protected addRoute
       return this.addRoute(
         "GET",
         path,
