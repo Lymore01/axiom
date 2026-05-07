@@ -3,12 +3,11 @@
 import {
   Box,
   FileCode,
-  Globe,
   HardDrive,
   Lock,
   Plus,
-  Zap,
   ShieldAlert,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -117,7 +116,7 @@ export function Ecosystem() {
             </div>
 
             <Link
-              href="/docs/plugins"
+              href="/docs/ecosystem/plugins"
               className="inline-flex items-center gap-3 px-6 py-3 border border-white/10 hover:border-white/20 transition-all text-[10px] font-mono tracking-widest uppercase text-white/40 hover:text-white"
             >
               <Plus className="w-3 h-3" />

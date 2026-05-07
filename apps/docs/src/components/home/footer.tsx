@@ -66,7 +66,7 @@ export function Footer() {
                 eb92d11
               </span>
               <span className="text-[9px] font-mono text-white/40 uppercase hover:text-white transition-colors">
-                <Link href="/roadmap">Lymore01: Roadmap</Link>
+                <Link href="/docs/introduction">Lymore01: Roadmap</Link>
               </span>
             </div>
             <div className="flex items-center gap-3 shrink-0">
@@ -74,7 +74,7 @@ export function Footer() {
                 af82c12
               </span>
               <span className="text-[9px] font-mono text-white/40 uppercase hover:text-white transition-colors">
-                <Link href="/docs/plugins">Lymore01: Ecosystem</Link>
+                <Link href="/docs/ecosystem/plugins">Lymore01: Ecosystem</Link>
               </span>
             </div>
             <div className="flex items-center gap-3 shrink-0">
