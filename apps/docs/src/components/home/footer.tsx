@@ -27,7 +27,7 @@ export function Footer() {
               <div className="relative group">
                 <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_4px,rgba(255,255,255,0.08)_4px,rgba(255,255,255,0.08)_5px)]" />
                 <Link
-                  href="/docs/core-concepts"
+                  href="/docs"
                   className="relative px-8 py-3 border border-white/10 text-white/60 font-mono text-[10px] tracking-[0.2em] uppercase block hover:text-white hover:border-white/20 transition-all"
                 >
                   Read Design Docs

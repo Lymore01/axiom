@@ -20,7 +20,7 @@ export function baseOptions(): BaseLayoutProps {
         on: "nav",
         children: (
           <a href="/docs" className="text-sm font-medium text-white">
-            Documentations
+            Documentation
           </a>
         ),
       },
