@@ -1,6 +1,6 @@
 {
   "name": "axeom",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "The weightless framework for heavy performance",
   "main": "./dist/index.cjs",
