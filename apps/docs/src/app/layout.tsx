@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/react";
 import { RootProvider } from "fumadocs-ui/provider/next";
 import { Command } from "lucide-react";
 import { Metadata } from "next";
@@ -55,6 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           }}
         >
           {children}
+          <Analytics />
         </RootProvider>
       </body>
     </html>
