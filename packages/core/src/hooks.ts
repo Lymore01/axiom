@@ -4,29 +4,42 @@ import type { Context } from "./types";
  * Manages the global and local request lifecycle hooks.
  * Hooks allow for cross-cutting concerns like logging, security, and response modification.
  */
-export class Hooks<T extends Record<string, any>, D extends Record<string, any>> {
-  public onRequests: Array<(ctx: Context<any, any, T, D>) => void | Promise<void>> = [];
+export class Hooks<
+  T extends Record<string, any>,
+  D extends Record<string, any>,
+> {
+  public onRequests: Array<
+    (ctx: Context<any, any, T, D>) => void | Promise<void>
+  > = [];
   public onBeforeMatch: Array<
-    (req: Request) => Response | undefined | Promise<Response | undefined>
+    (
+      req: Request,
+    ) => Response | void | undefined | Promise<Response | void | undefined>
   > = [];
   public onResponses: Array<
     (
       res: Response,
       ctx: Context<any, any, T, D>,
-    ) => Response | undefined | Promise<Response | undefined>
+    ) => Response | void | undefined | Promise<Response | void | undefined>
   > = [];
   public beforeHandles: Array<
-    (ctx: Context<any, any, T, D>) => Response | undefined | Promise<Response | undefined>
+    (
+      ctx: Context<any, any, T, D>,
+    ) => Response | void | undefined | Promise<Response | void | undefined>
   > = [];
   public afterHandles: Array<
-    (ctx: Context<any, any, T, D>) => Response | undefined | Promise<Response | undefined>
+    (
+      ctx: Context<any, any, T, D>,
+    ) => Response | void | undefined | Promise<Response | void | undefined>
   > = [];
 
   addRequestHook(fn: (ctx: Context<any, any, T, D>) => void | Promise<void>) {
     this.onRequests.push(fn);
   }
 
-  addBeforeMatchHook(fn: (req: Request) => Response | undefined | Promise<Response | undefined>) {
+  addBeforeMatchHook(
+    fn: (req: Request) => Response | void | undefined | Promise<Response | void | undefined>,
+  ) {
     this.onBeforeMatch.push(fn);
   }
 
@@ -34,19 +47,23 @@ export class Hooks<T extends Record<string, any>, D extends Record<string, any>>
     fn: (
       res: Response,
       ctx: Context<any, any, T, D>,
-    ) => Response | undefined | Promise<Response | undefined>,
+    ) => Response | void | undefined | Promise<Response | void | undefined>,
   ) {
     this.onResponses.push(fn);
   }
 
   addBeforeHandleHook(
-    fn: (ctx: Context<any, any, T, D>) => Response | undefined | Promise<Response | undefined>,
+    fn: (
+      ctx: Context<any, any, T, D>,
+    ) => Response | void | undefined | Promise<Response | void | undefined>,
   ) {
     this.beforeHandles.push(fn);
   }
 
   addAfterHandleHook(
-    fn: (ctx: Context<any, any, T, D>) => Response | undefined | Promise<Response | undefined>,
+    fn: (
+      ctx: Context<any, any, T, D>,
+    ) => Response | void | undefined | Promise<Response | void | undefined>,
   ) {
     this.afterHandles.push(fn);
   }

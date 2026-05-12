@@ -34,7 +34,8 @@ const isDeno = typeof Deno !== "undefined";
 const isWorkerd =
   // @ts-expect-error
   typeof __IS_WORKERD__ !== "undefined" ||
-  (typeof navigator !== "undefined" && navigator.userAgent === "Cloudflare-Workers");
+  (typeof navigator !== "undefined" &&
+    navigator.userAgent === "Cloudflare-Workers");
 
 const runtime = isBun
   ? "bun"

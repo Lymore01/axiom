@@ -45,7 +45,9 @@ export type RouteSchema = {
 export type Infer<S> = S extends Validator<infer T> ? T : any;
 
 export type RouteInput<Path extends string, S extends RouteSchema> = Prettify<
-  (S["body"] extends Validator ? { body: Infer<S["body"]> } : { body?: never }) &
+  (S["body"] extends Validator
+    ? { body: Infer<S["body"]> }
+    : { body?: never }) &
     (S["query"] extends Validator
       ? { query: Infer<S["query"]> }
       : { query?: Record<string, string | undefined> }) &
@@ -54,7 +56,11 @@ export type RouteInput<Path extends string, S extends RouteSchema> = Prettify<
       : { params: ParamsObject<Path> })
 >;
 
-export type RouteMetadata<Path extends string, S extends RouteSchema, Return> = {
+export type RouteMetadata<
+  Path extends string,
+  S extends RouteSchema,
+  Return,
+> = {
   input: RouteInput<Path, S>;
   output: Return;
 };
@@ -82,9 +88,13 @@ export type Context<
 > = Prettify<
   {
     /** The URL path parameters. */
-    params: S["params"] extends Validator ? Infer<S["params"]> : ParamsObject<Path>;
+    params: S["params"] extends Validator
+      ? Infer<S["params"]>
+      : ParamsObject<Path>;
     /** The URL search parameters. */
-    query: S["query"] extends Validator ? Infer<S["query"]> : Record<string, string | undefined>;
+    query: S["query"] extends Validator
+      ? Infer<S["query"]>
+      : Record<string, string | undefined>;
     /** The parsed request body. */
     body: S["body"] extends Validator ? Infer<S["body"]> : any;
     /** Standard Web Headers object. */
@@ -114,7 +124,10 @@ export type Handler<
   Return = any,
 > = (ctx: Context<Path, S, T, D>) => Return | Promise<Return>;
 
-export interface Route<T extends Record<string, any> = any, D extends Record<string, any> = any> {
+export interface Route<
+  T extends Record<string, any> = any,
+  D extends Record<string, any> = any,
+> {
   method: string;
   path: string;
   regex: RegExp;
@@ -125,13 +138,13 @@ export interface Route<T extends Record<string, any> = any, D extends Record<str
   decorators: Record<string, any>;
   onRequests?: Array<(ctx: any) => void | Promise<void>>;
   onResponses?: Array<
-    (res: Response, ctx: any) => Response | undefined | Promise<Response | undefined>
+    (res: Response, ctx: any) => Response | void | undefined | Promise<Response | void | undefined>
   >;
   beforeHandles: Array<
-    (ctx: Context<any, any, T, D>) => Response | undefined | Promise<Response | undefined>
+    (ctx: Context<any, any, T, D>) => Response | void | undefined | Promise<Response | void | undefined>
   >;
   afterHandles: Array<
-    (ctx: Context<any, any, T, D>) => Response | undefined | Promise<Response | undefined>
+    (ctx: Context<any, any, T, D>) => Response | void | undefined | Promise<Response | void | undefined>
   >;
   metadata?: Record<string, any>;
 }

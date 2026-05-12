@@ -531,7 +531,7 @@ export class Axeom<
    * Useful for global redirects or early security checks.
    */
   onBeforeMatch(
-    fn: (req: Request) => Response | undefined | Promise<Response | undefined>,
+    fn: (req: Request) => Response | void | undefined | Promise<Response | void | undefined>,
   ): this {
     this.hooks.addBeforeMatchHook(fn);
     return this;
@@ -545,7 +545,7 @@ export class Axeom<
     fn: (
       res: Response,
       ctx: Context<any, any, T, D>,
-    ) => Response | undefined | Promise<Response | undefined>,
+    ) => Response | void | undefined | Promise<Response | void | undefined>,
   ): this {
     this.hooks.addResponseHook(fn as any);
     return this;
@@ -557,7 +557,7 @@ export class Axeom<
   onBeforeHandle(
     fn: (
       ctx: Context<any, any, T, D>,
-    ) => Response | undefined | Promise<Response | undefined>,
+    ) => Response | void | undefined | Promise<Response | void | undefined>,
   ): this {
     this.hooks.addBeforeHandleHook(fn as any);
     return this;
@@ -569,7 +569,7 @@ export class Axeom<
   onAfterHandle(
     fn: (
       ctx: Context<any, any, T, D>,
-    ) => Response | undefined | Promise<Response | undefined>,
+    ) => Response | void | undefined | Promise<Response | void | undefined>,
   ): this {
     this.hooks.addAfterHandleHook(fn as any);
     return this;

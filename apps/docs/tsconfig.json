@@ -36,6 +36,9 @@
         "../../packages/schema/src/index.ts"
       ],
       "@axeom/logger": [
+        "../../packages/plugins/logger/src/index.ts"
+      ],
+      "@axeom/logger-lib": [
         "../../packages/logger/src/index.ts"
       ],
       "fumadocs-mdx:collections/*": [
@@ -46,6 +49,10 @@
       {
         "name": "next"
       }
+    ],
+    "types": [
+      "bun",
+      "node"
     ],
     "incremental": true
   },
@@ -58,6 +65,9 @@
     "../../packages/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "../../packages/**/test/**/*",
+    "../../packages/**/*.test.ts",
+    "../../packages/**/*.spec.ts"
   ]
 }
