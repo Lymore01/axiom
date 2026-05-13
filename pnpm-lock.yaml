@@ -47,12 +47,51 @@ importers:
 
   apps/docs:
     dependencies:
+      '@axeom/auth':
+        specifier: workspace:*
+        version: link:../../packages/plugins/auth
+      '@axeom/client':
+        specifier: workspace:*
+        version: link:../../packages/client
+      '@axeom/compression':
+        specifier: workspace:*
+        version: link:../../packages/plugins/compression
       '@axeom/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@axeom/cors':
+        specifier: workspace:*
+        version: link:../../packages/plugins/cors
+      '@axeom/express':
+        specifier: workspace:*
+        version: link:../../packages/adapter-express
+      '@axeom/framework':
+        specifier: workspace:*
+        version: link:../../packages/axeom
+      '@axeom/rate-limit':
+        specifier: workspace:*
+        version: link:../../packages/plugins/rate-limit
       '@axeom/schema':
         specifier: workspace:*
         version: link:../../packages/schema
+      '@axeom/security':
+        specifier: workspace:*
+        version: link:../../packages/plugins/security
+      '@axeom/static':
+        specifier: workspace:*
+        version: link:../../packages/plugins/static
+      '@axeom/swagger':
+        specifier: workspace:*
+        version: link:../../packages/plugins/swagger
+      '@axeom/upload':
+        specifier: workspace:*
+        version: link:../../packages/plugins/upload
+      '@axeom/web':
+        specifier: workspace:*
+        version: link:../../packages/adapter-web
+      '@axeom/ws':
+        specifier: workspace:*
+        version: link:../../packages/plugins/ws
       '@radix-ui/react-collapsible':
         specifier: ^1.1.12
         version: 1.1.12(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -68,9 +107,6 @@ importers:
       '@vercel/analytics':
         specifier: ^2.0.1
         version: 2.0.1(next@16.0.10(react-dom@19.2.5(react@19.2.5))(react@19.2.5))(react@19.2.5)
-      axeom:
-        specifier: workspace:*
-        version: link:../../packages/axeom
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -150,7 +186,7 @@ importers:
       '@axeom/express':
         specifier: workspace:*
         version: link:../../packages/adapter-express
-      axeom:
+      '@axeom/framework':
         specifier: workspace:*
         version: link:../../packages/axeom
 
@@ -159,7 +195,7 @@ importers:
       '@axeom/auth':
         specifier: workspace:*
         version: link:../../packages/plugins/auth
-      axeom:
+      '@axeom/framework':
         specifier: workspace:*
         version: link:../../packages/axeom
       zod:
@@ -171,6 +207,9 @@ importers:
       '@axeom/adapter-bun':
         specifier: workspace:*
         version: link:../../packages/adapter-bun
+      '@axeom/framework':
+        specifier: workspace:*
+        version: link:../../packages/axeom
       '@axeom/logger':
         specifier: workspace:*
         version: link:../../packages/plugins/logger
@@ -183,9 +222,6 @@ importers:
       '@axeom/ws':
         specifier: workspace:*
         version: link:../../packages/plugins/ws
-      axeom:
-        specifier: workspace:*
-        version: link:../../packages/axeom
       zod:
         specifier: ^3.23.8
         version: 3.25.76
@@ -196,12 +232,12 @@ importers:
 
   examples/cloudflare-workers:
     dependencies:
+      '@axeom/framework':
+        specifier: workspace:*
+        version: link:../../packages/axeom
       '@axeom/swagger':
         specifier: workspace:*
         version: link:../../packages/plugins/swagger
-      axeom:
-        specifier: workspace:*
-        version: link:../../packages/axeom
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20260403.1
@@ -212,12 +248,12 @@ importers:
 
   examples/deno:
     dependencies:
+      '@axeom/framework':
+        specifier: workspace:*
+        version: link:../../packages/axeom
       '@axeom/swagger':
         specifier: workspace:*
         version: link:../../packages/plugins/swagger
-      axeom:
-        specifier: workspace:*
-        version: link:../../packages/axeom
     devDependencies:
       '@types/deno':
         specifier: ^2.5.0
@@ -237,6 +273,9 @@ importers:
       '@axeom/cors':
         specifier: workspace:*
         version: link:../../packages/plugins/cors
+      '@axeom/framework':
+        specifier: workspace:*
+        version: link:../../packages/axeom
       '@axeom/rate-limit':
         specifier: workspace:*
         version: link:../../packages/plugins/rate-limit
@@ -255,9 +294,6 @@ importers:
       '@axeom/ws':
         specifier: workspace:*
         version: link:../../packages/plugins/ws
-      axeom:
-        specifier: workspace:*
-        version: link:../../packages/axeom
       zod:
         specifier: ^3.22.4
         version: 3.25.76
@@ -267,12 +303,15 @@ importers:
       '@axeom/client':
         specifier: workspace:*
         version: link:../../packages/client
+      '@axeom/framework':
+        specifier: workspace:*
+        version: link:../../packages/axeom
+      '@axeom/swagger':
+        specifier: workspace:*
+        version: link:../../packages/plugins/swagger
       '@axeom/web':
         specifier: workspace:*
         version: link:../../packages/adapter-web
-      axeom:
-        specifier: workspace:*
-        version: link:../../packages/axeom
       next:
         specifier: latest
         version: 16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -316,6 +355,9 @@ importers:
       '@axeom/express':
         specifier: workspace:*
         version: link:../../packages/adapter-express
+      '@axeom/framework':
+        specifier: workspace:*
+        version: link:../../packages/axeom
       '@axeom/logger':
         specifier: workspace:*
         version: link:../../packages/plugins/logger
@@ -337,9 +379,6 @@ importers:
       '@axeom/ws':
         specifier: workspace:*
         version: link:../../packages/plugins/ws
-      axeom:
-        specifier: workspace:*
-        version: link:../../packages/axeom
       zod:
         specifier: ^4.3.6
         version: 4.3.6

@@ -1,7 +1,7 @@
+import Axeom, { logger, s } from "@axeom/framework";
 import { swagger } from "@axeom/swagger";
 import uploadPlugin from "@axeom/upload";
 import wsPlugin from "@axeom/ws";
-import Axeom, { logger, s } from "axeom";
 
 new Axeom()
   .use(uploadPlugin({ dest: "./uploads" }))

@@ -12,10 +12,10 @@ tRPC and Axeom both aim to solve the problem of type safety between the server a
 ## Routing & Protocol
 tRPC is a protocol layer that hides HTTP. Axeom is an HTTP engine that embraces it.
 
-<SideBySide leftLabel="Axeom" rightLabel="tRPC">
+<SideBySide leftLabel="@axeom/framework" rightLabel="tRPC">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Standard REST API
@@ -43,10 +43,10 @@ const router = t.router({
 ## Validation & Type Safety
 tRPC requires Zod. Axeom uses its native `s` schema, which is lighter and more integrated into the engine registry.
 
-<SideBySide leftLabel="Axeom" rightLabel="Hono">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Hono">
 ```typescript twoslash
 // @noErrors
-import Axeom, { s } from 'axeom';
+import Axeom, { s } from '@axeom/framework';
 const app = new Axeom();
 
 // Native Registry Inference
@@ -77,14 +77,14 @@ const router = t.router({
 ## Lifecycle (Context)
 tRPC's context is built through middleware layers. Axeom uses a Flattened Hook System (`onRequest`, `onResponse`) and `.derive()`.
 
-<SideBySide leftLabel="Axeom" rightLabel="tRPC">
+<SideBySide leftLabel="@axeom/framework" rightLabel="tRPC">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Direct Hook/Derive patterns
-app.derive(() => ({ user: "axeom" }))
+app.derive(() => ({ user: "@axeom/framework" }))
    .onRequest((ctx) => {
      console.log(ctx.request.headers);
    });
@@ -97,7 +97,7 @@ const t = initTRPC.create();
 
 // Procedure Middleware
 const protectedProc = t.procedure.use(({ ctx, next }) => {
-  return next({ ctx: { user: 'axeom' } });
+  return next({ ctx: { user: '@axeom/framework' } });
 });
 ```
 </SideBySide>
@@ -107,10 +107,10 @@ const protectedProc = t.procedure.use(({ ctx, next }) => {
 ## Encapsulation (Modules)
 Axeom groups its logic into paths via the fluent API. tRPC groups its logic into nested router objects.
 
-<SideBySide leftLabel="Axeom" rightLabel="tRPC">
+<SideBySide leftLabel="@axeom/framework" rightLabel="tRPC">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Path-based grouping
@@ -136,11 +136,11 @@ const v1Router = t.router({
 ## OpenAPI & Documentation
 Axeom provides native Swagger support via a plugin. tRPC requires specialized libraries like `trpc-openapi` and explicit metadata for every route to escape its proprietary format.
 
-<SideBySide leftLabel="Axeom" rightLabel="tRPC">
+<SideBySide leftLabel="@axeom/framework" rightLabel="tRPC">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
-import { swagger } from "axeom/swagger";
+import Axeom from '@axeom/framework';
+import { swagger } from "@axeom/swagger";
 const app = new Axeom();
 
 // Native Swagger Plugin
@@ -166,10 +166,10 @@ t.procedure
 ## Error Handling
 tRPC mappings errors to TRPCError codes. Axeom uses standard HTTP statuses or rejections.
 
-<SideBySide leftLabel="Axeom" rightLabel="tRPC">
+<SideBySide leftLabel="@axeom/framework" rightLabel="tRPC">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Standard Rejections
@@ -195,11 +195,11 @@ throw new TRPCError({
 ## Beyond E2E Safety
 tRPC is restricted to procedure calls. Axeom is a full-scale web engine with plugins for WebSockets, SSE, and more.
 
-<SideBySide leftLabel="Axeom" rightLabel="tRPC">
+<SideBySide leftLabel="@axeom/framework" rightLabel="tRPC">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
-import { wsPlugin } from 'axeom/ws';
+import Axeom from '@axeom/framework';
+import { wsPlugin } from '@axeom/ws';
 const app = new Axeom();
 
 // WS, SSE, Plugins

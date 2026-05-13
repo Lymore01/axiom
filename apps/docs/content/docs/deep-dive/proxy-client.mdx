@@ -13,8 +13,8 @@ The client is ultra-lightweight and works in any environment (Browser, React Nat
 
 ```typescript twoslash
 // @noErrors
-import Axeom, { s } from 'axeom';
-import { createAxeomClient } from 'axeom/client';
+import Axeom, { s } from '@axeom/framework';
+import { createAxeomClient } from '@axeom/client';
 
 const app = new Axeom()
   .get("/v1/status", () => ({ status: "online" }))
@@ -37,8 +37,8 @@ Axeom uses a fluent Proxy API. Instead of strings, you use property access to "w
 ### Static Paths
 ```typescript twoslash
 // @noErrors
-import Axeom, { s } from 'axeom';
-import { createAxeomClient } from 'axeom/client';
+import Axeom, { s } from '@axeom/framework';
+import { createAxeomClient } from '@axeom/client';
 
 const app = new Axeom()
   .get("/v1/status", () => ({ status: "online" }))
@@ -62,8 +62,8 @@ When a route contains a parameter (e.g., `:id`), you can call the segment as a f
 
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
-import { createAxeomClient } from 'axeom/client';
+import Axeom from '@axeom/framework';
+import { createAxeomClient } from '@axeom/client';
 
 const app = new Axeom()
   .get("/users/:id/profile", () => ({ name: "User" }))
@@ -86,8 +86,8 @@ Every terminal method (`get`, `post`, `put`, `patch`, `delete`) accepts a standa
 
 ```typescript twoslash
 // @noErrors
-import Axeom, { s } from 'axeom';
-import { createAxeomClient } from 'axeom/client';
+import Axeom, { s } from '@axeom/framework';
+import { createAxeomClient } from '@axeom/client';
 
 const app = new Axeom()
   .get("/search", () => [], {
@@ -127,8 +127,8 @@ The magic of the Axeom Client isn't in its runtime (which is just ~500 bytes of 
 
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
-import { createAxeomClient } from 'axeom/client';
+import Axeom from '@axeom/framework';
+import { createAxeomClient } from '@axeom/client';
 
 const app = new Axeom().get("/users", () => []);
 const client = createAxeomClient<typeof app>();

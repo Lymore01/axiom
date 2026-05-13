@@ -4,8 +4,9 @@ import { Metadata } from "next";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "Axeom",
-  description: "The weightless framework for heavy performance.",
+  title: "Axeom | The Weightless Web Engine",
+  description:
+    "A high-performance, type-safe, and runtime-agnostic web framework for the modern edge.",
   icons: {
     icon: [
       {

@@ -1,5 +1,17 @@
 # @axeom/logger
 
+## 0.2.0
+
+### Minor Changes
+
+- fix: standardize atomic imports and clean up meta-package exports
+
+### Patch Changes
+
+- Updated dependencies
+  - @axeom/logger-lib@0.2.0
+  - @axeom/core@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes

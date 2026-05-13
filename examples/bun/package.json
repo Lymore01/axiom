@@ -1,11 +1,11 @@
 {
   "name": "bun-example",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "scripts": {
     "dev": "bun --watch src/index.ts"
   },
   "dependencies": {
-    "axeom": "workspace:*",
+    "@axeom/framework": "workspace:*",
     "@axeom/auth": "workspace:*",
     "zod": "^3.22.4"
   },

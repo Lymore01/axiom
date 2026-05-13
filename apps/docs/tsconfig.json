@@ -23,10 +23,10 @@
       "@/*": [
         "./src/*"
       ],
-      "axeom": [
+      "@axeom/framework": [
         "../../packages/axeom/src/index.ts"
       ],
-      "axeom/*": [
+      "@axeom/framework/*": [
         "../../packages/axeom/src/*"
       ],
       "@axeom/core": [
@@ -40,6 +40,42 @@
       ],
       "@axeom/logger-lib": [
         "../../packages/logger/src/index.ts"
+      ],
+      "@axeom/web": [
+        "../../packages/adapter-web/src/index.ts"
+      ],
+      "@axeom/client": [
+        "../../packages/client/src/index.ts"
+      ],
+      "@axeom/express": [
+        "../../packages/adapter-express/src/index.ts"
+      ],
+      "@axeom/swagger": [
+        "../../packages/plugins/swagger/src/index.ts"
+      ],
+      "@axeom/ws": [
+        "../../packages/plugins/ws/src/index.ts"
+      ],
+      "@axeom/auth": [
+        "../../packages/plugins/auth/src/index.ts"
+      ],
+      "@axeom/compression": [
+        "../../packages/plugins/compression/src/index.ts"
+      ],
+      "@axeom/cors": [
+        "../../packages/plugins/cors/src/index.ts"
+      ],
+      "@axeom/rate-limit": [
+        "../../packages/plugins/rate-limit/src/index.ts"
+      ],
+      "@axeom/security": [
+        "../../packages/plugins/security/src/index.ts"
+      ],
+      "@axeom/static": [
+        "../../packages/plugins/static/src/index.ts"
+      ],
+      "@axeom/upload": [
+        "../../packages/plugins/upload/src/index.ts"
       ],
       "fumadocs-mdx:collections/*": [
         "./.source/*"

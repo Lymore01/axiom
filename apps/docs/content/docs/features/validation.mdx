@@ -15,7 +15,7 @@ Axeom's built-in `s` utility is an ultra-lightweight validation engine designed 
 
 ```typescript twoslash
 // @noErrors
-import Axeom, { s } from 'axeom';
+import Axeom, { s } from '@axeom/framework';
 const app = new Axeom();
 // ---cut---
 const CreateUserSchema = s.object({
@@ -42,7 +42,7 @@ Axeom is library-agnostic. Because the engine relies on a simple `Validator` int
 
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 import { z } from 'zod';
 const app = new Axeom();
 // ---cut---
@@ -63,7 +63,7 @@ Axeom's validation covers every part of the request. Once validated, the data is
 
 ```typescript twoslash
 // @noErrors
-import Axeom, { s } from 'axeom';
+import Axeom, { s } from '@axeom/framework';
 const app = new Axeom();
 // ---cut---
 app.get("/search", (ctx) => {

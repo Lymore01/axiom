@@ -20,7 +20,7 @@ npm install @axeom/swagger
 Simply register the plugin on your Axeom instance. It will automatically scan all registered routes across your entire application.
 
 ```typescript
-import { Axeom } from 'axeom';
+import { Axeom } from '@axeom/framework';
 import { swagger } from '@axeom/swagger';
 
 const app = new Axeom()
@@ -49,7 +49,7 @@ By default, your documentation will be available at:
 Axeom's router is metadata-aware. You can add descriptions, summaries, and tags directly to your route definitions.
 
 ```typescript
-import { s } from 'axeom';
+import { s } from '@axeom/framework';
 
 app.post("/users", (ctx) => {
   return { id: 1, ...ctx.body };

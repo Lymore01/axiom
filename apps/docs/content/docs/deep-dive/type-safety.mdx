@@ -35,7 +35,7 @@ app.get("/users/:id", () => { ... })
 Axeom integrates deeply with its built-in schema utility to synchronize your runtime validation with your TypeScript types.
 
 ```typescript
-import { s } from "axeom";
+import { s } from "@axeom/framework";
 
 const UserSchema = s.object({ name: s.string() });
 

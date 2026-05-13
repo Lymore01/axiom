@@ -1,6 +1,6 @@
+import Axeom, { s } from "@axeom/framework";
+import { swagger } from "@axeom/swagger";
 import { createNextHandler } from "@axeom/web";
-import Axeom, { s } from "axeom";
-import { swagger } from "axeom/swagger";
 
 const axeom = new Axeom()
   // add a request ID and a mock "user" to every request context
@@ -77,8 +77,11 @@ const axeom = new Axeom()
     }
   });
 
-export const { GET, POST, PUT, PATCH, DELETE, OPTIONS } = createNextHandler(axeom, {
-  basePath: "/api/axeom",
-});
+export const { GET, POST, PUT, PATCH, DELETE, OPTIONS } = createNextHandler(
+  axeom,
+  {
+    basePath: "/api/axeom",
+  },
+);
 
 export type App = typeof axeom;

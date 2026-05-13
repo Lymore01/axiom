@@ -1,6 +1,6 @@
 {
   "name": "node-express-example",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "nodemon --exec tsx src/index.ts",
@@ -10,7 +10,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "axeom": "workspace:*",
+    "@axeom/framework": "workspace:*",
     "@axeom/auth": "workspace:*",
     "@axeom/client": "workspace:*",
     "@axeom/core": "workspace:*",

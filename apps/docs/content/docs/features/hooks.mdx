@@ -28,7 +28,7 @@ Hooks can be registered globally on the main app instance or locally within a gr
 
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 // ---cut---
 // Global Hook: Runs for EVERY request
@@ -56,7 +56,7 @@ Use this for early-exit logic like maintenance modes or global redirects. It onl
 
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 // ---cut---
 app.onBeforeMatch((req) => {
@@ -71,7 +71,7 @@ These are the most common hooks for authorization and logging. `onBeforeHandle` 
 
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 // ---cut---
 app.onBeforeHandle((ctx) => {
@@ -89,7 +89,7 @@ This hook receives both the generated `Response` and the `Context`. Use it to in
 
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 // ---cut---
 app.onResponse((res, ctx) => {

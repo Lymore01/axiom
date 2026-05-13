@@ -1,12 +1,12 @@
 {
   "name": "kitchen-sink",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "start": "bun run src/index.ts"
   },
   "dependencies": {
-    "axeom": "workspace:*",
+    "@axeom/framework": "workspace:*",
     "@axeom/auth": "workspace:*",
     "@axeom/compression": "workspace:*",
     "@axeom/cors": "workspace:*",

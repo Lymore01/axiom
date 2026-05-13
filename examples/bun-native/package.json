@@ -1,12 +1,12 @@
 {
   "name": "bun-native-app",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "bun --hot index.ts"
   },
   "dependencies": {
-    "axeom": "workspace:*",
+    "@axeom/framework": "workspace:*",
     "@axeom/adapter-bun": "workspace:*",
     "@axeom/ws": "workspace:*",
     "@axeom/swagger": "workspace:*",

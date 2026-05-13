@@ -1,13 +1,13 @@
 import { authPlugin, bearerGuard } from "@axeom/auth";
 import { compression } from "@axeom/compression";
 import { cors } from "@axeom/cors";
+import Axeom, { logger, s } from "@axeom/framework";
 import { rateLimit } from "@axeom/rate-limit";
 import { securityHeaders } from "@axeom/security";
 import { staticPlugin } from "@axeom/static";
 import { swagger } from "@axeom/swagger";
 import uploadPlugin from "@axeom/upload";
 import { wsPlugin } from "@axeom/ws";
-import Axeom, { logger, s } from "axeom";
 import { Database } from "bun:sqlite";
 
 const db = new Database("kitchen-sink.db");

@@ -1,5 +1,17 @@
 # bun-native-app
 
+## 0.2.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @axeom/swagger@0.2.0
+  - @axeom/logger@0.2.0
+  - @axeom/upload@0.2.0
+  - @axeom/adapter-bun@0.2.0
+  - @axeom/ws@0.2.0
+  - @axeom/framework@0.2.0
+
 ## 0.1.1
 
 ### Patch Changes

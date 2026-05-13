@@ -27,7 +27,7 @@ app.ws("/chat", {
 ```
 
 ### 2. The Finalization (Runtime-Specific)
-This is where the **Adapter** comes in. Small, specialized packages like `@axeom/adapter-bun` or `@axeom/adapter-express` wrap the core handler.
+This is where the **Adapter** comes in. Small, specialized packages like `@axeom/express` wrap the core handler.
 
 When the adapter sees a response with a `101` status, it:
 1.  **Retrieves the Metadata**: It pulls the WebSocket handlers from the matched route.

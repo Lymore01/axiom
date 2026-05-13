@@ -12,10 +12,10 @@ Fastify is the industry standard for high-performance Node.js development. Axeom
 ## Routing & Handlers
 Axeom uses a standard REST-first approach and exposes a unified context object that works across all runtimes.
 
-<SideBySide leftLabel="Axeom" rightLabel="Fastify">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Fastify">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Unified Context handler
@@ -49,10 +49,10 @@ fastify.post('/data', async (req, reply) => {
 ## Validation & Type Safety
 Axeom provides Zero-CodeGen Type Safety through its native `s` schema utility. Axeom's types are perfectly inferred at runtime and shared with the client without extra steps.
 
-<SideBySide leftLabel="Axeom" rightLabel="Fastify">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Fastify">
 ```typescript twoslash
 // @noErrors
-import Axeom, { s } from 'axeom';
+import Axeom, { s } from '@axeom/framework';
 const app = new Axeom();
 
 // Native schema-to-type inference
@@ -85,10 +85,10 @@ fastify.post('/user', { schema }, (req) => {
 ## File Upload
 Axeom handles file uploads through a unified `storage` abstraction, making file saving identical on Bun, Deno, and Node.
 
-<SideBySide leftLabel="Axeom" rightLabel="Fastify">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Fastify">
 ```typescript twoslash
 // @noErrors
-import Axeom, { s } from 'axeom';
+import Axeom, { s } from '@axeom/framework';
 const app = new Axeom();
 
 // Native storage abstraction
@@ -121,14 +121,14 @@ fastify.post('/upload', async (req) => {
 ## Lifecycle & Interceptors
 Fastify uses an onion-model middleware. Axeom uses a Flattened Hook System (`onRequest`, `onResponse`) and `.derive()` for data injection.
 
-<SideBySide leftLabel="Axeom" rightLabel="Fastify">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Fastify">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Flat Hooks & Derivations
-app.derive(() => ({ user: 'axeom' }))
+app.derive(() => ({ user: '@axeom/framework' }))
    .onRequest((ctx) => {
      console.log(ctx.request.url);
    });
@@ -152,10 +152,10 @@ fastify.addHook('onRequest', (req, reply, done) => {
 ## Encapsulation (Grouping)
 Axeom's grouping system is designed for isolation without the complexity of Fastify's plugin decorators.
 
-<SideBySide leftLabel="Axeom" rightLabel="Fastify">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Fastify">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Functional grouping
@@ -182,10 +182,10 @@ fastify.register((instance, opts, done) => {
 ## Error Handling
 Axeom utilizes a unified error interceptor that works seamlessly with standard JavaScript rejections.
 
-<SideBySide leftLabel="Axeom" rightLabel="Fastify">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Fastify">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Direct rejection handling
@@ -211,11 +211,11 @@ fastify.setErrorHandler((error, request, reply) => {
 ## OpenAPI & Documentation
 In Axeom, documentation is a byproduct of your schemas via the `@axeom/swagger` plugin.
 
-<SideBySide leftLabel="Axeom" rightLabel="Fastify">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Fastify">
 ```typescript twoslash
 // @noErrors
 // Native Swagger Plugin
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 import { swagger } from "@axeom/swagger";
 const app = new Axeom();
 

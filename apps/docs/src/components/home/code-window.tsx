@@ -3,7 +3,7 @@
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 
-const SERVER_CODE = `import Axeom, { s } from "axeom"
+const SERVER_CODE = `import Axeom, { s } from "@axeom/framework"
 import { swagger } from "@axeom/swagger"
 
 const axeom = new Axeom()
@@ -26,7 +26,7 @@ const axeom = new Axeom()
 
 export type App = typeof axeom;`;
 
-const CLIENT_CODE = `import { createClient } from "axeom/client"
+const CLIENT_CODE = `import { createClient } from "@axeom/client"
 import type { App } from "./server"
 
 const client = createClient<App>({

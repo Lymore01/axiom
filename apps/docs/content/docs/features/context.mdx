@@ -28,7 +28,7 @@ Use this for static dependencies like database clients that don't change per-req
 
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const PrismaClient = class { user = { findMany: () => [{ id: 1 }] } };
 // ---cut---
 const app = new Axeom()
@@ -48,7 +48,7 @@ Use this for per-request computations, like extracting authenticated users.
 
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 // ---cut---
 const engine = app
@@ -84,7 +84,7 @@ When you use `.group()`, it creates a branch of the engine. Derivations added in
 
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 const checkAdminAuth = async () => ({ admin: true });
 // ---cut---

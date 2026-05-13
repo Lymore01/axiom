@@ -26,7 +26,7 @@ describe("Axeom Core Engine", () => {
     // Valid Request
     const validReq = new Request("http://localhost/project", {
       method: "POST",
-      body: JSON.stringify({ name: "Axeom", priority: "high" }),
+      body: JSON.stringify({ name: "@axeom/framework", priority: "high" }),
       headers: { "Content-Type": "application/json" },
     });
     const validRes = await app.handle(validReq);
@@ -36,7 +36,7 @@ describe("Axeom Core Engine", () => {
     // Invalid Request (Invalid Enum Value)
     const invalidReq = new Request("http://localhost/project", {
       method: "POST",
-      body: JSON.stringify({ name: "Axeom", priority: "critical" }),
+      body: JSON.stringify({ name: "@axeom/framework", priority: "critical" }),
       headers: { "Content-Type": "application/json" },
     });
     const invalidRes = await app.handle(invalidReq);

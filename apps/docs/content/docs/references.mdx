@@ -10,7 +10,7 @@ import { TypeTable } from 'fumadocs-ui/components/type-table';
 The primary class for building and managing your weightless API.
 
 ```typescript
-import { Axeom } from "axeom";
+import { Axeom } from "@axeom/framework";
 
 const app = new Axeom();
 ```
@@ -87,7 +87,7 @@ The context object passed to every handler and hook. Note that Axeom handles res
 Axeom uses a library-agnostic schema system. While it provides a native, zero-dependency utility (`s`), it supports any library that implements the `Validator` interface (including Zod).
 
 ```typescript
-import { s } from "axeom";
+import { s } from "@axeom/framework";
 
 app.post("/data", (ctx) => {
   return ctx.body;

@@ -12,48 +12,49 @@ Axeom is designed to be low-friction. You can install it using your favorite pac
   For the best experience, we recommend using **Bun** as it provides the fastest startup times and native support for the Axeom engine.
 </Callout>
 
-## Install the Meta-Package
-
-For the best experience, we recommend using the `axeom` meta-package, which includes the core engine, the standard schema validator (`s`), and the most common plugins.
+## Install the Core
+The `@axeom/framework` package provides the high-performance engine, the standard schema validator (`s`), and core structured logging.
 
 <Tabs items={['npm', 'pnpm', 'bun']}>
   <Tab value="npm">
     ```bash
-    npm install axeom
+    npm install @axeom/framework
     ```
   </Tab>
   <Tab value="pnpm">
     ```bash
-    pnpm add axeom
+    pnpm add @axeom/framework
     ```
   </Tab>
   <Tab value="bun">
     ```bash
-    bun add axeom
+    bun add @axeom/framework
     ```
   </Tab>
 </Tabs>
 
 ---
 
-## Scaffolding a New Project (Coming Soon)
+## Choose your Adapter
+To keep your production bundle weightless, Axeom adapters are installed separately. Choose the one that matches your runtime environment.
 
-The fastest way to start a new Axeom project is using our interactive CLI:
-
+### For Web Standards (Next.js, Vercel, Cloudflare)
 ```bash
-npx create-axeom@latest ./my-app
+npm install @axeom/web
 ```
 
-This will guide you through choosing a runtime (Bun, Node, Deno) and an architectural template (Monolith, Microservice, or Library).
+### For Node.js (Express)
+```bash
+npm install @axeom/express
+```
 
 ---
 
 ## Manual Setup
-
 If you prefer to set things up manually, start by creating a main file (e.g., `index.ts`):
 
 ```typescript
-import { Axeom } from 'axeom';
+import { Axeom } from '@axeom/framework';
 
 const app = new Axeom();
 
@@ -68,14 +69,13 @@ export default app;
 ---
 
 ## Runtime Configuration
-
 Axeom's "Write Once" philosophy means you don't need different code for different runtimes. The engine automatically detects its environment.
 
 ### For Bun & Deno (Native)
 Direct support is built-in. Just call `.listen()` and the engine will ignite the native server for you.
 
 ```typescript
-import { Axeom } from 'axeom';
+import { Axeom } from '@axeom/framework';
 
 const app = new Axeom();
 
@@ -97,7 +97,7 @@ import { createExpressAdapter } from '@axeom/express';
 import express from 'express';
 
 const server = express();
-server.use(createExpressAdapter(app)); // 'app' is your Axeom instance
+server.use(createExpressAdapter(app));
 server.listen(3000);
 ```
 
@@ -106,7 +106,7 @@ Integrating with Next.js is just as simple, allowing you to share types between 
 
 ```typescript
 // app/api/[[...axeom]]/route.ts
-import { createNextHandler } from 'axeom/web';
+import { createNextHandler } from '@axeom/web';
 import app from '@/server';
 
 export const { GET, POST, PUT, DELETE, PATCH } = createNextHandler(app);

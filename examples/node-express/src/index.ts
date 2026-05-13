@@ -1,14 +1,14 @@
-import { authPlugin, authRoutes } from "@axeom/auth";
+import { authPlugin } from "@axeom/auth";
 import { compression } from "@axeom/compression";
 import { cors } from "@axeom/cors";
 import { createExpressAdapter } from "@axeom/express";
+import Axeom, { logger, s } from "@axeom/framework";
 import { rateLimit } from "@axeom/rate-limit";
 import { securityHeaders } from "@axeom/security";
 import { staticPlugin } from "@axeom/static";
 import { swagger } from "@axeom/swagger";
 import uploadPlugin from "@axeom/upload";
 import { wsPlugin } from "@axeom/ws";
-import Axeom, { logger, s } from "axeom";
 
 const axeom = new Axeom()
   .use(logger())
@@ -38,7 +38,10 @@ const axeom = new Axeom()
   .ws("/chat", {
     open(ws) {
       console.log("\x1b[36m[Node WS]\x1b[0m Client connected!");
-      console.log("\x1b[36m[Node WS]\x1b[0m Handshake Data:", JSON.stringify(ws.data));
+      console.log(
+        "\x1b[36m[Node WS]\x1b[0m Handshake Data:",
+        JSON.stringify(ws.data),
+      );
       ws.send("Welcome to Axeom WebSocket (Node/Express)!");
     },
     message(ws, msg) {
@@ -103,6 +106,6 @@ const axeom = new Axeom()
 
 const server = createExpressAdapter(axeom as any);
 
-server.listen(3000, () => {
-  console.log("Axeom is live (Node/Express) at http://localhost:3000");
+server.listen(3003, () => {
+  console.log("Axeom is live (Node/Express) at http://localhost:3003");
 });

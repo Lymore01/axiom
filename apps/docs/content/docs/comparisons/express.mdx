@@ -12,10 +12,10 @@ Express is the most popular web framework in history. However, its architecture 
 ## Routing & Handlers
 Express relies on the legacy Node.js `IncomingMessage` and `ServerResponse`. Axeom uses the modern, Fetch-compliant `Request` and `Response`.
 
-<SideBySide leftLabel="Axeom" rightLabel="Express">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Express">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Async-first, Fetch-compliant
@@ -41,10 +41,10 @@ app.get('/api', (req, res) => {
 ## Validation & Type Safety
 Express has no built-in validation. `req.body` is `any`. Axeom uses the native `s` schema engine to provide instant E2E safety.
 
-<SideBySide leftLabel="Axeom" rightLabel="Express">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Express">
 ```typescript twoslash
 // @noErrors
-import Axeom, { s } from 'axeom';
+import Axeom, { s } from '@axeom/framework';
 const app = new Axeom();
 
 // Auto-typed via s.object()
@@ -73,10 +73,10 @@ app.post('/user', (req, res) => {
 ## File Upload
 Express requires `multer` for multipart data. Axeom handles uploads natively with cross-runtime support via the upload plugin.
 
-<SideBySide leftLabel="Axeom" rightLabel="Express">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Express">
 ```typescript twoslash
 // @noErrors
-import Axeom, { s } from 'axeom';
+import Axeom, { s } from '@axeom/framework';
 const app = new Axeom();
 
 // Integrated streaming
@@ -106,10 +106,10 @@ app.post('/upload', upload.single('doc'), (req, res) => {
 ## Lifecycle & Interceptors
 Express uses an imperative middleware chain. Axeom uses a declarative **Hook System** (`onRequest`, `onResponse`) and `.derive()`.
 
-<SideBySide leftLabel="Axeom" rightLabel="Express">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Express">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Declarative Hooks
@@ -138,10 +138,10 @@ app.use((req: any, res: any, next: any) => {
 ## Encapsulation (Grouping)
 Express routers must be manually instantiated and wired. Axeom groups are part of the fluent API.
 
-<SideBySide leftLabel="Axeom" rightLabel="Express">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Express">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Fluent grouping
@@ -167,10 +167,10 @@ app.use('/v1', router);
 ## Error Handling
 Asynchronous errors in Express can crash the process. Axeom handles all rejections globally in its flattened lifecycle.
 
-<SideBySide leftLabel="Axeom" rightLabel="Express">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Express">
 ```typescript twoslash
 // @noErrors
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 const app = new Axeom();
 
 // Global safety
@@ -200,11 +200,11 @@ app.get('/err', async (req, res, next) => {
 ## OpenAPI & Documentation
 Documentation in Express is manual. In Axeom, it is a byproduct of your schemas via the `@axeom/swagger` plugin.
 
-<SideBySide leftLabel="Axeom" rightLabel="Express">
+<SideBySide leftLabel="@axeom/framework" rightLabel="Express">
 ```typescript twoslash
 // @noErrors
 // Automatic Swagger
-import Axeom from 'axeom';
+import Axeom from '@axeom/framework';
 import { swagger } from "@axeom/swagger";
 const app = new Axeom();
 

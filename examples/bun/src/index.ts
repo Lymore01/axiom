@@ -1,5 +1,5 @@
 import { authRoutes } from "@axeom/auth";
-import Axeom, { s } from "axeom";
+import Axeom, { s } from "@axeom/framework";
 
 const axeom = new Axeom()
   .decorate({

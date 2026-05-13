@@ -1,5 +1,5 @@
+import Axeom, { logger } from "@axeom/framework";
 import swagger from "@axeom/swagger";
-import Axeom, { logger } from "axeom";
 
 new Axeom()
   .use(logger())
