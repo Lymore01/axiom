@@ -51,11 +51,11 @@ export function CodeWindow() {
   const getInstallCmd = () => {
     switch (pkgMgr) {
       case "pnpm":
-        return "pnpm add axeom";
+        return "pnpm add @axeom/framework";
       case "bun":
-        return "bun add axeom";
+        return "bun add @axeom/framework";
       default:
-        return "npm install axeom";
+        return "npm install @axeom/framework";
     }
   };
 
