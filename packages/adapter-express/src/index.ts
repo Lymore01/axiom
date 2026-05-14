@@ -30,7 +30,7 @@ export function createExpressAdapter(
   app.use(async (req, res) => {
     const protocol = req.protocol;
     const host = req.get("host");
-    const fullUrl = `${protocol}://${host}${req.originalUrl}`;
+    const fullUrl = `${protocol}://${host}${req.url}`;
 
     try {
       const webRequest = new Request(fullUrl, {

@@ -531,7 +531,9 @@ export class Axeom<
    * Useful for global redirects or early security checks.
    */
   onBeforeMatch(
-    fn: (req: Request) => Response | void | undefined | Promise<Response | void | undefined>,
+    fn: (
+      req: Request,
+    ) => Response | void | undefined | Promise<Response | void | undefined>,
   ): this {
     this.hooks.addBeforeMatchHook(fn);
     return this;
@@ -614,19 +616,15 @@ export class Axeom<
   }
 
   /**
-   * Automatically detect the runtime and start a server.
-   * Currently supports: Bun, Deno.
-   * For Node, use a specific adapter like @axeom/express.
+   * Ignites the engine and starts listening for requests on the specified port.
+   * Axeom automatically detects the runtime environment (Bun or Deno) and uses
+   * the most optimized native server implementation available.
    *
-   * @param portOrOptions - The port number or a server options object.
+   * @param port - The port number to listen on.
+   * @param cb - An optional callback function to execute once the server is live.
+   * @param options - Additional options for the native server.
    */
-  listen(portOrOptions: number | any = 3000): any {
-    const options =
-      typeof portOrOptions === "number"
-        ? { port: portOrOptions }
-        : portOrOptions || {};
-    const port = options.port || 3000;
-
+  listen(port: number, cb?: () => void, options: any = {}) {
     // Bun detection
     if (typeof Bun !== "undefined") {
       this.server = Bun.serve({
@@ -655,31 +653,40 @@ export class Axeom<
         },
       });
 
-      console.log(`\x1b[32m Axeom listening on ${this.server.url}\x1b[0m`);
+      if (cb) cb();
       return this.server;
     }
 
     // @ts-expect-error - Deno detection
     if (typeof Deno !== "undefined" && typeof Deno.serve === "function") {
       // @ts-expect-error
-      this.server = Deno.serve({ ...options, port }, async (req) => {
-        const res = await this.handle(req);
-        if (res.status === 101) {
-          const url = new URL(req.url);
-          const matched = this.router.match(req.method, url.pathname);
-          if (matched && matched.route.metadata?.ws) {
-            // @ts-expect-error
-            const { socket, response } = Deno.upgradeWebSocket(req);
-            const handlers = matched.route.metadata.ws;
-            socket.onopen = () => handlers.open?.(socket);
-            socket.onmessage = (e: any) => handlers.message?.(socket, e.data);
-            socket.onclose = () => handlers.close?.(socket);
-            socket.onerror = (e: any) => handlers.error?.(socket, e);
-            return response;
+      this.server = Deno.serve(
+        {
+          ...options,
+          port,
+          onListen: () => {
+            if (cb) cb();
+          },
+        },
+        async (req: Request) => {
+          const res = await this.handle(req);
+          if (res.status === 101) {
+            const url = new URL(req.url);
+            const matched = this.router.match(req.method, url.pathname);
+            if (matched && matched.route.metadata?.ws) {
+              // @ts-expect-error
+              const { socket, response } = Deno.upgradeWebSocket(req);
+              const handlers = matched.route.metadata.ws;
+              socket.onopen = () => handlers.open?.(socket);
+              socket.onmessage = (e: any) => handlers.message?.(socket, e.data);
+              socket.onclose = () => handlers.close?.(socket);
+              socket.onerror = (e: any) => handlers.error?.(socket, e);
+              return response;
+            }
           }
-        }
-        return res;
-      });
+          return res;
+        },
+      );
       return this.server;
     }
 

@@ -6,7 +6,7 @@ import { useState } from "react";
 const SERVER_CODE = `import Axeom, { s } from "@axeom/framework"
 import { swagger } from "@axeom/swagger"
 
-const axeom = new Axeom()
+const app = new Axeom()
   .use(swagger())
   .derive(async () => ({
     user: { id: "lymore", role: "architect" }
@@ -24,14 +24,16 @@ const axeom = new Axeom()
     })
   })
 
-export type App = typeof axeom;`;
+app.listen(3001, () => {
+  console.log("Axeom Ignite: http://localhost:3001")
+})
 
-const CLIENT_CODE = `import { createClient } from "@axeom/client"
+export type App = typeof app;`;
+
+const CLIENT_CODE = `import { createAxeomClient } from "@axeom/client"
 import type { App } from "./server"
 
-const client = createClient<App>({
-  baseUrl: "https://api.axeom.dev"
-})
+const client = createAxeomClient<App>("https://api.axeom.dev")
 
 // End-to-End Type Safety
 const res = await client.projects.post({
@@ -165,7 +167,7 @@ export function CodeWindow() {
                               ".get",
                               ".post",
                               "new Axeom",
-                              "createClient",
+                              "createAxeomClient",
                             ].includes(part)
                           )
                             return (

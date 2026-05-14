@@ -12,7 +12,7 @@ Axeom provides a **Runtime-Agnostic WebSocket** implementation through the `@axe
 First, ensure you have the plugin installed and registered:
 
 ```typescript
-import { Axeom } from '@axeom/framework';
+import Axeom from '@axeom/framework';
 import { wsPlugin } from '@axeom/ws';
 
 const app = new Axeom().use(wsPlugin());
@@ -54,6 +54,6 @@ When running on Express, the adapter uses the standard `ws` package under the ho
 
 ## Best Practices
 
-- **Shared State**: Remember that WebSockets are stateful. Use the `ws.data` property (provided by some runtimes) or external stores like Redis for managing state across multiple connections.
+- **Shared State**: Remember that WebSockets are stateful. Use the `ws.data` property to share context from the handshake phase (e.g., authenticated user info).
 - **Security**: Always use the `@axeom/security` plugin to ensure proper headers and protections are in place for your handshake requests.
-- **E2E Types**: Currently, WebSocket message types are in development. Stay tuned for full type safety for message payloads!
+- **E2E Types**: Axeom is evolving to support full JSON-Schema validation for WebSocket messages. For now, we recommend using a shared type for your message payloads to maintain safety.

@@ -1,5 +1,18 @@
 # axeom
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @axeom/express@0.2.1
+  - @axeom/core@0.2.1
+  - @axeom/web@0.2.1
+  - @axeom/client@0.2.1
+  - @axeom/logger@0.2.1
+  - @axeom/swagger@0.2.1
+  - @axeom/ws@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes

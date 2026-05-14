@@ -32,6 +32,11 @@ Adds dynamic properties to the context by running a function before the route ha
 #### `.handle(request: Request)`
 The standard winterTC entry point. Converts a native `Request` into a `Promise<Response>`.
 
+#### `.listen(port, callback?)`
+Ignites the engine. Axeom automatically detects if it's running in Bun or Deno and starts the optimized native server.
+- `port`: The port number to listen on.
+- `callback`: (Optional) A function executed once the server is live.
+
 ---
 
 ### Lifecycle Hooks

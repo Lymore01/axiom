@@ -1,5 +1,13 @@
 # @axeom/express
 
+## 0.2.1
+
+### Patch Changes
+
+- Unify native listen callback and fix Express middleware path resolution.
+- Updated dependencies
+  - @axeom/core@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes

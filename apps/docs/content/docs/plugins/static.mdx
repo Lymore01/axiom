@@ -18,7 +18,7 @@ npm install @axeom/static
 ## Usage
 
 ```typescript
-import { Axeom } from '@axeom/framework';
+import Axeom from '@axeom/framework';
 import { staticPlugin } from '@axeom/static';
 
 const app = new Axeom()
@@ -28,6 +28,10 @@ const app = new Axeom()
     maxAge: 86400           // Cache results for 24 hours
   }));
 ```
+
+<Callout type="tip" title="Production Path Safety">
+  When deploying to production, use `import.meta.dir` (Bun/Deno) or `process.cwd()` (Node) to ensure your `rootPath` is absolute. This prevents 404 errors if the process working directory changes during deployment.
+</Callout>
 
 In the example above, a file located at `./public/img/logo.png` will be served at `http://localhost:3000/public/img/logo.png`.
 
