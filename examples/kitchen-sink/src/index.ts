@@ -64,7 +64,8 @@ const app = new Axeom()
     status: "ok",
     uptime: process.uptime(),
     timestamp: Date.now(),
-    engine: "Axeom v2",
+    engine: "Axeom v0.2.0",
+    architect: "Kelly Limo",
   }))
 
   // --- 3. Decorations (Injecting our Real DB) ---
@@ -261,53 +262,16 @@ const app = new Axeom()
     },
   });
 
-// --- 10. Start Server (Bun Native)
-console.log(`
-🚀 Axeom Kitchen Sink (v2.0) is live!
+// --- 10. Start Server (Axeom Native)
+app.listen(3000, () => {
+  console.log(`
+🚀 Axeom Kitchen Sink (v0.2.0) is live!
 -------------------------------------
 📍 Dashboard:    http://localhost:3000
 📍 Swagger:      http://localhost:3000/swagger
 📍 Database:     kitchen-sink.db (SQLite)
 -------------------------------------
 `);
-
-export default {
-  port: 3000,
-  fetch: async (req: Request, server: any) => {
-    const res = await app.handle(req, { server });
-
-    // Handle WebSocket Upgrades
-    if (res.headers.get("X-Axeom-Status") === "101") {
-      const { matched } = (res as any)._axeom_meta || {};
-      const handlers = matched?.route?.meta?.ws;
-
-      const success = server.upgrade(req, {
-        data: {
-          ws: handlers,
-          url: req.url,
-        },
-      });
-
-      return success
-        ? undefined
-        : new Response("WebSocket Upgrade Failed", { status: 500 });
-    }
-
-    return res;
-  },
-  websocket: {
-    // 30s Idle Timeout (Production Heartbeat)
-    idleTimeout: 30,
-    open(ws: any) {
-      if (ws.data?.ws?.open) ws.data.ws.open(ws);
-    },
-    message(ws: any, msg: any) {
-      if (ws.data?.ws?.message) ws.data.ws.message(ws, msg);
-    },
-    close(ws: any, code: number, reason: string) {
-      if (ws.data?.ws?.close) ws.data.ws.close(ws, code, reason);
-    },
-  },
-};
+});
 
 export type App = typeof app;

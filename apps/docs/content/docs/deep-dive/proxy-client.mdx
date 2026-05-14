@@ -121,23 +121,43 @@ The magic of the Axeom Client isn't in its runtime (which is just ~500 bytes of 
 
 ## Best Practices
 
-- **Shared Types**: In a monorepo, you can import the `AppType` directly. In poly-repos, you can publish a tiny package containing only the type definition.
+- **Shared Types**: In a monorepo, you can import the `AppType` directly. 
+- **Cross-Project (Poly-repo)**: If your frontend is in a separate repository, you can still achieve E2E safety by publishing a shared types package or simply copying the `AppType` definition.
 - **Global Instance**: Create a single client instance and export it as your API entry point.
-- **Error Handling**: Use standard `try/catch` and let the client convert API errors into typed exceptions.
+
+### Example: Separate Frontend Setup
+If your backend is defined in `server.ts`, you can consume it in your React/Next.js app like this:
 
 ```typescript twoslash
 // @noErrors
-import Axeom from '@axeom/framework';
 import { createAxeomClient } from '@axeom/client';
+// Imagine this type is imported from your shared backend package
+import type { AppType } from './server-types'; 
 
-const app = new Axeom().get("/users", () => []);
-const client = createAxeomClient<typeof app>();
+const client = createAxeomClient<AppType>("https://api.axeom.dev");
+
+export default client;
+```
+
+---
+
+## Error Handling
+
+Axeom clients use standard `try/catch` blocks. The client is designed to convert API errors into typed exceptions automatically.
+
+```typescript twoslash
+// @noErrors
+import { createAxeomClient } from '@axeom/client';
+const client = createAxeomClient<any>("");
 // ---cut---
 try {
   const data = await client.users.get();
 } catch (e: any) {
-  // Handle typed AxeomError
+  // Axeom errors include status codes and formatted validation errors
   console.error("Engine failure:", e.message);
+  if (e.status === 401) {
+    // Redirect to login
+  }
 }
 ```
 

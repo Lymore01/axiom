@@ -35,6 +35,10 @@ Capture dynamic segments using the `:` prefix. These are automatically extracted
 import Axeom from '@axeom/framework';
 const app = new Axeom();
 // ---cut---
+app.decorate({
+  time: new Date().toLocaleTimeString()
+});
+
 app.get("/engine/:node_id/status", (ctx) => {
   const { node_id } = ctx.params;
   return `Node ${node_id} is active at ${ctx.time}`;

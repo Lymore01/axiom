@@ -1,5 +1,12 @@
 # bun-example
 
+## 0.2.1
+
+### Patch Changes
+
+- @axeom/framework@0.2.1
+- @axeom/auth@0.2.1
+
 ## 0.2.0
 
 ### Patch Changes

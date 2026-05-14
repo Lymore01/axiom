@@ -1,5 +1,11 @@
 # @axeom/core
 
+## 0.2.1
+
+### Patch Changes
+
+- Unify native listen callback and fix Express middleware path resolution.
+
 ## 0.2.0
 
 ### Minor Changes
@@ -18,6 +24,7 @@
 - 26cf643: Initial release of Axeom framework and plugins.
 - Updated dependencies [26cf643]
   - @axeom/logger-lib@0.1.1
+
 # @axeom/core
 
 ## 0.2.0

@@ -67,7 +67,9 @@ new Axeom()
       await Bun.sleep(1000);
     }
   })
-  .listen(3333);
+  .listen(3333, () => {
+    console.log("Server started on http://localhost:3333");
+  });
 
 /* 
   File Upload Test:
