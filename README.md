@@ -1,20 +1,54 @@
-# Axeom
-
-**The weightless framework for heavy performance.**
-
-Axeom is an ultra-lean, high-performance web engine for TypeScript developers who value speed as a first principle. Designed to stay out of your way while providing undeniable type-safety.
+<div align="center">
+  <img src="apps/docs/public/images/icon-light.png" width="120" height="120" alt="Axeom Logo" />
+  <h1>AXEOM</h1>
+  <p><strong>The Backend for Frontend Web Framework.</strong></p>
+  <p>
+    <a href="https://axeom-docs.vercel.app">Documentation</a> • 
+    <a href="https://github.com/Lymore01/axeom">GitHub</a> • 
+    <a href="https://www.npmjs.com/package/@axeom/framework">NPM</a>
+  </p>
+</div>
 
 ---
 
-### Zero-Gravity Engineering
+### Zero-Code-Gen Type Safety
 
-- **Universal**: Runs on Bun, Deno, Node, or the Edge without friction.
-- **Type-First**: Single-source-of-truth types from server to client.
-- **Elemental**: Modular security, logging, and validation by design.
+Axeom moves the heavy lifting to the initialization phase. By treating your API as a **Blueprint**, we achieve perfect End-to-End type safety from server to client without a single build step or generated file.
 
-### Start building
+### Multi-Runtime by Default
 
-```bash
-pnpm install
-pnpm --filter node-express-example dev
+Write your logic once and deploy it anywhere. Axeom provides a unified, high-performance experience across:
+
+- **Bun** (Native)
+- **Deno** (Native)
+- **Node.js** (via @axeom/express)
+- **Cloudflare Workers** (Edge)
+
+### High Velocity Infrastructure
+
+- **Radix Router**: Binary-fast routing with O(1) complexity.
+- **Atomic Plugins**: Only install what you use (CORS, Auth, Swagger, etc).
+- **Binary Handshakes**: Agnostic WebSocket and SSE implementations.
+
+---
+
+### Quick Start (Bun)
+
+```typescript
+import Axeom from "@axeom/framework";
+
+const app = new Axeom()
+  .get("/", () => "Weightless World.")
+  .listen(3000, () => {
+    console.log("Axeom Ignite: http://localhost:3000");
+  });
+
+export type AppType = typeof app;
 ```
+
+---
+
+<div align="center">
+  <p>Architected by <strong>Kelly Limo</strong></p>
+  <p>Licensed under <strong>MIT</strong></p>
+</div>
